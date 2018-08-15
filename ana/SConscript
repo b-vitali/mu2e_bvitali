@@ -1,0 +1,61 @@
+#!/usr/bin/env python
+#
+# Script to build the files found in this directory.
+#------------------------------------------------------------------------------
+import os
+Import('env')
+Import('stntuple_helper')
+#------------------------------------------------------------------------------
+# 2016-10-10: STNTUPLE link: add ROOT 'EG' library after 'Physics' library
+#------------------------------------------------------------------------------
+rootlibs = env['ROOTLIBS']
+if ( not ("EG"   in rootlibs)): rootlibs.insert(rootlibs.index("Physics")+1,"EG");
+if ( not ("Eve"  in rootlibs)): rootlibs.insert(rootlibs.index("EG"     )+1,"Eve");
+if ( not ("Geom" in rootlibs)): rootlibs.insert(rootlibs.index("Eve"    )+1,"Geom");
+if ( not ("RGL"  in rootlibs)): rootlibs.insert(rootlibs.index("Geom"   )+1,"RGL");
+
+
+debug = False
+stn_helper = stntuple_helper(debug);
+
+dict_skip_list = []
+if (os.getenv("STNTUPLE_MC_GEN") == None): 
+    dict_skip_list.append("TPhotosAnaModule_linkdef.h");
+
+stn_helper.handle_dictionaries(dict_skip_list);
+
+list_of_cc_files =  Glob('*.cc', strings=True);
+skip_list        = []
+if (os.getenv("STNTUPLE_MC_GEN") == None): 
+    skip_list.append("TPhotosAnaModule.cc");
+
+
+
+
+stntuple_libs    = ['Stntuple_alg', 'Stntuple_obj', 'Stntuple_loop',
+                    'Stntuple_gui', 'Stntuple_geom', 'Stntuple_base'];
+
+if (os.getenv("STNTUPLE_MC_GEN") !=None): 
+    stntuple_libs.append("mc_photos");
+
+libs             = stntuple_libs + [ 
+                    'mu2e_BeamlineGeom',
+                    'mu2e_BFieldGeom',
+                    'mu2e_GeometryService',
+                    'mu2e_ConfigTools',
+                    'mu2e_Mu2eUtilities',
+                    'fhiclcpp',
+                    'cetlib',
+                    'xerces-c',
+                    rootlibs,
+                    'boost_filesystem',
+                    'boost_system'
+];
+
+stn_helper.build_libs(list_of_cc_files, skip_list,libs);
+
+rootlibs.remove("RGL");
+rootlibs.remove("Eve");
+rootlibs.remove("EG");
+rootlibs.remove("Geom");
+# print "tmpdir:"+env['TMP_LIB_DIR']
