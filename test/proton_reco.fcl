@@ -9,9 +9,10 @@
 #include "Stntuple/fcl/prolog.fcl"
 
 BEGIN_PROLOG
-  pdgCode    : @local::Particle.eminus
+  pdgCode    : @local::Particle.eminus 
   bgHitFiles : @nil
 END_PROLOG
+
 
 #include "Stntuple/fcl/templates.fcl"
 
@@ -60,7 +61,7 @@ physics : {
 	HelixFinder        : { @table::producers.HelixFinder
 	    minNHit    : 5
 	    debugLevel : 100
-
+	    HitBackgroundBits : []
 	    RobustHelixFit : {
 		debugLevel : 100
 		minNHit : 5
@@ -68,8 +69,10 @@ physics : {
 		# minR    : 
 		rcmin   : 50  #from Valerio Bertacchi's study #FIXME!
 		maxR    : 700 
-		# minAbsLambda : 
-		# maxAbsLambda :
+		minAbsLambda :   100
+		maxAbsLambda :   800
+		mindphi      :   0.1
+		maxdphi      :   2.5
 		# minCenterR   :
 		# maxCenterR   :
 	    }
@@ -159,7 +162,7 @@ physics : {
     }
     
     filters  : { @table::filters 
-	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.user.proton_gun_stnmaker.xxx.000001.stn" }
+	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.user.proton_gun_stnmaker_spectrum.xxx.000001.stn" }
 
 	StntupleMaker : { @table::StntupleMakerTemplate 
 	    makePid                    : 0
@@ -215,7 +218,7 @@ physics : {
 	 @sequence::trkCaloMatchingTprSeq
 	 #
 	 #	 , @sequence::Stntuple.stnmaker
-#	 , MuHitDisplayProton
+	 , MuHitDisplayProton
 	]
     p2: [ makeSH, makePH, FlagBkgHits,
 	 TimeClusterFinder, HelixFinder, KSFDpP, KFFDpP,
@@ -224,7 +227,7 @@ physics : {
 	 @sequence::trkCaloMatchingTprSeq
 	 #
 	 #	 , @sequence::Stntuple.stnmaker
-#	 , MuHitDisplayProton
+ 	 , MuHitDisplayProton
 	]
 
     trigger_paths : [ p2  ]
@@ -232,13 +235,13 @@ physics : {
     end_paths     : [ out ]
 }
 
-services.TFileService.fileName            : "nts.user.proton_gun_stnmaker.xxx.000001.root"
+services.TFileService.fileName            : "nts.user.proton_gun_stnmaker_spectrum.xxx.000001.root"
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST (.art) file to be written out
 #-----------------------------------------------------------------------------
 # physics.out                               : [ detectorOutput ]
 # outputs.detectorOutput.SelectEvents       : [ p2]
-outputs.detectorOutput.fileName           : "sim.user.proton_gun_stnmaker.xxx.000001.art"
+outputs.detectorOutput.fileName           : "sim.user.proton_gun_stnmaker_spectrum.xxx.000001.art"
 #------------------------------------------------------------------------------
 # uncomment to avoid waisting time on the initialization of detailed neutron 
 # cross sections - that shouldn't affect the electron simulation 
