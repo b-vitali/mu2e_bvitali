@@ -16,7 +16,7 @@ END_PROLOG
 
 #include "Stntuple/fcl/templates.fcl"
 
-process_name : ProtonReco
+process_name : MixProtonReco //era ProtonReco
 
 source       : { module_type : RootInput   }
 
@@ -25,16 +25,10 @@ producers    : { @table::Stntuple.producers }
 filters      : { @table::Stntuple.filters   }
 paths        : { @table::Stntuple.paths     }
 
-gen_seq : [ generate, g4run, detectorFilter,
-	    #
-	    @sequence::CommonMC.DigiSim, @sequence::CaloDigiMC.DigiSim, @sequence::TrackerMC.DigiSim
-	    #
-	   ]
-
 physics : {
     producers: { @table::producers 
 	generate : { @table::StoppedParticleReactionGun 
-	    physics : {
+  	    physics : {
 		pdgId            : 2212
 		elow             : 150.
 		ehi              : 151.
@@ -44,7 +38,7 @@ physics : {
 	}
 
 	makeSH            : { @table::TrkHitReco.producers.makeSH
-	    minimumEnergy  : 0. # 0.0035
+	    minimumEnergy  : 0.  #0.0035 #0  #10% (14.25%) use minimumEnergy of 0.0005
 	    maximumEnergy  : 0.014
 	}
 
@@ -61,10 +55,10 @@ physics : {
 
 	HelixFinder        : { @table::producers.HelixFinder
 	    minNHit    : 5
-	    debugLevel : 100
+	    debugLevel : 0 // 100
 	    HitBackgroundBits : []
 	    RobustHelixFit : {
-		debugLevel : 100
+		debugLevel : 0 // 100
 		minNHit : 5
 		# LOOK THE EVENT DISPLAY TO UNDERSTAND IF WE NEED TO TUNE THESE PARAMETERS
 		# minR    : 
@@ -86,13 +80,13 @@ physics : {
 # Seed fit for protons
 #==============================================================================
 	KSFDpP : { @table::KSF # module_type        : KalSeedFit; #
-	    debugLevel                : 100
+	    debugLevel                : 0 // 100
 	    MinNHits                  : 4  # from Valerio Bertacchi's fcl
 	    StrawHitCollection	      : "makeSH"
 	    StrawHitFlagCollection    : "FlagBkgHits:StrawHits"
 	    SeedCollection	      : "HelixFinder:Negative"
 	    KalFit		      : {  @table::KSF.KalFit
-		debugLevel                  : 100
+		debugLevel                  : 0 // 100
 		MaxIterations                   : 3
 		fieldCorrection	      	  : false
 		materialCorrection              : false
@@ -123,13 +117,13 @@ physics : {
 # INSTANCE FOR THE FINAL FIT (KALMAN FILTER BASED FIT)
 #------------------------------------------------------------------------------------------
 	KFFDpP : { @table::KFF #  module_type                 : KalFinalFit
-	    debugLevel                : 100
+	    debugLevel                : 0 //100
 #	    StrawHitCollection	      : "makeSH"
 	    ComboHitCollection	      : "makeSH"
 	    StrawHitFlagCollection    : "FlagBkgHits:StrawHits"
 	    SeedCollection            : "KSFDpP"
 	    KalFit		      : { @table::KFF.KalFit
-		debugLevel                  : 100
+		debugLevel                  : 0 // 100
 		minnstraws                  : 4
 		materialCorrection          : false
 		fieldCorrection	            : true
@@ -166,13 +160,13 @@ physics : {
 	    MaxAddChi                 : 5.
 	}
 
-	MergePatRecTpr: { @table::producers.MergePatRecTpr
-	    trkPatRecModuleLabel         : KFFDpP
-	}
+# 	MergePatRecTpr: { @table::producers.MergePatRecTpr
+# 	    trkPatRecModuleLabel         : KFFDpP
+# 	}
     }
     
     filters  : { @table::filters 
-	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.user.proton_gun_stnmaker_spectrum.xxx.000001.stn" }
+	InitStntuple : { @table::filters.InitStntuple histFileName : "NoPrimary-mix.MDC2018a.art.00020_0.stn" } //_10per100
 
 	StntupleMaker : { @table::StntupleMakerTemplate 
 	    makePid                    : 0
@@ -201,57 +195,44 @@ physics : {
 	}
 	detectorFilter:     @local::FilterStepPointMomentum
 
-	MuHitDisplayProton : { @table::MuHitDisplay 
-	    trkRecoModuleLabel           : MergePatRecTpr
-	    trkExtrapol                  : TrackCaloIntersectionTpr
-	    trkCalMatch                  : TrackCaloMatchingTpr
-	    strawHitFlagMakerModuleLabel : "FlagBkgHits:StrawHits"
-	    fitParticle                  : @local::Particle.proton
-	    fitDirection                 : @local::FitDir.downstream
-	}
-    }
+# 	MuHitDisplayDpp : { @table::MuHitDisplay 
+# 	    trkRecoModuleLabel           : MergePatRecDpp
+# 	    trkExtrapol                  : TrackCaloIntersectionDpp
+# 	    trkCalMatch                  : TrackCaloMatchingDpp
+# 	    strawHitFlagMakerModuleLabel : "FlagBkgHits:StrawHits"
+# 	    strawDigiMakerModuleLabel    : "compressDigiMCs"
+# 	    fitParticle                  : @local::Particle.proton
+# 	    fitDirection                 : @local::FitDir.downstream
+# 	}
+     }
 
     @table::paths
 
-    gen : [ @sequence::gen_seq ]
-
-    p1: [ @sequence::gen_seq, 
-
-	 @sequence::CaloReco.Reco, @sequence::CaloCluster.Reco,
-	 makeSH,
-	 makePH,
+    p1: [ 
+	 @sequence::Stntuple.trk_hit_reco, 
 	 #
-	 FlagBkgHits,
-	 TimeClusterFinder, HelixFinder, KSFDpP, KFFDpP,
-	 #
-	 MergePatRecTpr,
-	 @sequence::trkCaloMatchingTprSeq
-	 #
-	 #	 , @sequence::Stntuple.stnmaker
-	 , MuHitDisplayProton
+	 @sequence::Stntuple.cal_reco    ,
+	 @sequence::Stntuple.dpp_reco    , 
+	 MuHitDisplayDpp
 	]
-    p2: [ makeSH, makePH, FlagBkgHits,
-	 TimeClusterFinder, HelixFinder, KSFDpP, KFFDpP,
-	 #
-	 MergePatRecTpr,
-	 @sequence::trkCaloMatchingTprSeq
-	 #
-	 #	 , @sequence::Stntuple.stnmaker
- 	 , MuHitDisplayProton
+    p2: [ @sequence::Stntuple.trk_hit_reco, 
+	  @sequence::Stntuple.cal_reco       ,//
+	  @sequence::Stntuple.dpp_reco       ,//       
+	  @sequence::Stntuple.stnmaker_dpp    //
 	]
 
-    trigger_paths : [ p2  ]
+    trigger_paths : [ p1  ]
     out           : [     ]
     end_paths     : [ out ]
 }
 
-services.TFileService.fileName            : "nts.user.proton_gun_stnmaker_spectrum.xxx.000001.root"
+services.TFileService.fileName            : "NoPrimary-mix.MDC2018a.art.00020_0.root" //"nts.user.proton_mix.xxx.000000" or "MU2EGRIDDSOWNER.proton.root"
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST (.art) file to be written out
 #-----------------------------------------------------------------------------
 # physics.out                               : [ detectorOutput ]
 # outputs.detectorOutput.SelectEvents       : [ p2]
-outputs.detectorOutput.fileName           : "sim.user.proton_gun_stnmaker_spectrum.xxx.000001.art"
+outputs.detectorOutput.fileName           : "NoPrimary-mix.MDC2018a.art.00020_0.art"
 #------------------------------------------------------------------------------
 # uncomment to avoid waisting time on the initialization of detailed neutron 
 # cross sections - that shouldn't affect the electron simulation 

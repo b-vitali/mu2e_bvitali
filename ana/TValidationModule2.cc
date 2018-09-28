@@ -53,8 +53,6 @@ TValidationModule2::TValidationModule2(const char* name, const char* title):
   fPtMin  = 1.;
   fTrackNumber.Set(100);
 
-  fDiskCalorimeter = new TDiskCalorimeter();
-  fCalorimeterType = 2;
   fFillDioHist     = 1;
 
   fMinT0 = 0; // do not cut on time by default
@@ -116,32 +114,6 @@ void TValidationModule2::BookTrackSeedHistograms   (TrackSeedHist_t*   Hist, con
   
 }
 
-
-//-----------------------------------------------------------------------------
-void TValidationModule2::BookCaloHistograms(CaloHist_t* Hist, const char* Folder) {
-  //     char name [200];
-  //     char title[200];
-  //-----------------------------------------------------------------------------
-  //  
-  //-----------------------------------------------------------------------------
-  HBook1F(Hist->fVaneID ,"vane_id",Form("%s: Vane ID"       ,Folder), 10, 0,  10,Folder);
-
-  for (int i=0; i<4; i++) {
-    HBook1F(Hist->fEnergy  [i],Form("energy_%i",i),Form("%s: Hit Energy[%i]",Folder,i),200, 0, 100,Folder);
-    HBook1F(Hist->fTime    [i],Form("time_%i"  ,i),Form("%s: Hit time  [%i]",Folder,i),200, 0,2000,Folder);
-    HBook1F(Hist->fNHits   [i],Form("nhits_%i" ,i),Form("%s: NHits     [%i]",Folder,i), 50, 0,  50,Folder);
-    HBook1F(Hist->fRadius  [i],Form("r_%i"     ,i),Form("%s: Radius    [%i]",Folder,i),100, 0,1000,Folder);
-    HBook1F(Hist->fRadiusWE[i],Form("rwe_%i"   ,i),Form("%s: RadiusWE  [%i]",Folder,i),100, 0,1000,Folder);
-
-    HBook1F(Hist->fE700    [i],Form("e700_%i",i),Form("%s: Hit Energy[%i] (T > 700ns)",Folder,i),200, 0, 100,Folder);
-    HBook1F(Hist->fT700    [i],Form("t700_%i",i),Form("%s: Hit time  [%i] (T > 700ns)",Folder,i),200, 0,2000,Folder);
-    HBook1F(Hist->fN700    [i],Form("n700_%i",i),Form("%s: NHits     [%i] (T > 700ns)",Folder,i), 50, 0,  50,Folder);
-
-    HBook1F(Hist->fR700  [i],Form("r700_%i"  ,i),Form("%s: Radius (T>700) [%i]",Folder,i),100, 0,1000,Folder);
-    HBook1F(Hist->fRWE700[i],Form("rwe700_%i",i),Form("%s: Radius*E(T>700)[%i]",Folder,i),100, 0,1000,Folder);
-  }
-}
-
 //-----------------------------------------------------------------------------
 void TValidationModule2::BookClusterHistograms(ClusterHist_t* Hist, const char* Folder) {
 //   char name [200];
@@ -156,8 +128,8 @@ void TValidationModule2::BookClusterHistograms(ClusterHist_t* Hist, const char* 
   HBook1F(Hist->fY      ,"y"      ,Form("%s: cluster Y"     ,Folder),200,-1000,1000,Folder);
   HBook1F(Hist->fZ      ,"z"      ,Form("%s: cluster Z"     ,Folder),200, 11500,13500,Folder);
   HBook1F(Hist->fR      ,"r"      ,Form("%s: cluster Radius",Folder),100, 0,  1000,Folder);
-  HBook1F(Hist->fYMean  ,"ymean"  ,Form("%s: cluster YMean" ,Folder),400,-200,200,Folder);
-  HBook1F(Hist->fZMean  ,"zmean"  ,Form("%s: cluster ZMean" ,Folder),400,-200,200,Folder);
+  HBook1F(Hist->fYMean  ,"ymean"  ,Form("%s: cluster YMean" ,Folder),400,-400,400,Folder);
+  HBook1F(Hist->fZMean  ,"zmean"  ,Form("%s: cluster ZMean" ,Folder),400,-400,400,Folder);
   HBook1F(Hist->fSigY   ,"sigy"   ,Form("%s: cluster SigY"  ,Folder),100, 0,100,Folder);
   HBook1F(Hist->fSigZ   ,"sigz"   ,Form("%s: cluster SigZ"  ,Folder),100, 0,100,Folder);
   HBook1F(Hist->fSigR   ,"sigr"   ,Form("%s: cluster SigR"  ,Folder),100, 0,100,Folder);
@@ -182,6 +154,8 @@ void TValidationModule2::BookGenpHistograms(GenpHist_t* Hist, const char* Folder
   HBook1F(Hist->fT0     ,"t0"      ,Form("%s: T0"           ,Folder), 200,     0, 2000,Folder);
   HBook1F(Hist->fR0     ,"r"       ,Form("%s: R0"           ,Folder), 100,     0,  100,Folder);
   HBook1F(Hist->fCosTh  ,"cos_th"  ,Form("%s: Cos(Theta)"   ,Folder), 200,   -1.,   1.,Folder);
+
+  HBook1F(Hist->fPpr      ,"ppr"        ,Form("%s:True momentum of protons",Folder), 2000,  0, 400,Folder); //
 }
 
 //-----------------------------------------------------------------------------
@@ -189,48 +163,48 @@ void TValidationModule2::BookTrackHistograms(TrackHist_t* Hist, const char* Fold
 //   char name [200];
 //   char title[200];
 
-  HBook1F(Hist->fP[0]       ,"p"        ,Form("%s: Track P(Z1)"       ,Folder), 400,  90  ,120. ,Folder);
+  HBook1F(Hist->fP[0]       ,"p"        ,Form("%s: Track P(Z1)"       ,Folder), 400,  35  ,400. ,Folder);
   HBook1F(Hist->fP[1]       ,"p_1"      ,Form("%s: Track P(total)[1]" ,Folder), 100, 104.5,105.5,Folder);
-  HBook1F(Hist->fP[2]       ,"p_2"      ,Form("%s: Track P(total)[1]" ,Folder),1000,   0  ,200. ,Folder);
-  HBook1F(Hist->fP0         ,"p0"       ,Form("%s: Track P(Z0)"       ,Folder),1000,   0  ,200. ,Folder);
-  HBook1F(Hist->fP2         ,"p2"       ,Form("%s: Track P(z=-1540)"  ,Folder),1000,   0  ,200. ,Folder);
-  HBook1D(Hist->fPDio       ,"pdio"     ,Form("%s: Track P(DIO WT)"   ,Folder), 400,  90  ,110. ,Folder);
+  HBook1F(Hist->fP[2]       ,"p_2"      ,Form("%s: Track P(total)[1]" ,Folder),1000,   0  ,400. ,Folder);
+  HBook1F(Hist->fP0         ,"p0"       ,Form("%s: Track P(Z0)"       ,Folder),1000,   0  ,400. ,Folder);
+  HBook1F(Hist->fP2         ,"p2"       ,Form("%s: Track P(z=-1540)"  ,Folder),1000,   0  ,400. ,Folder);
+  HBook1D(Hist->fPDio       ,"pdio"     ,Form("%s: Track P(DIO WT)"   ,Folder), 400,  70  ,150. ,Folder);
   Hist->fPDio->Sumw2(kTRUE);
 
-  HBook1F(Hist->fFitMomErr  ,"momerr"   ,Form("%s: Track FitMomError" ,Folder), 200,   0  ,  1. ,Folder);
-  HBook1F(Hist->fPFront     ,"pf"       ,Form("%s: Track P(front)   " ,Folder), 400,  90  ,110. ,Folder);
-  HBook1F(Hist->fDpFront    ,"dpf"      ,Form("%s: Track P-P(front) " ,Folder), 200,  -5. ,  5. ,Folder);
-  HBook1F(Hist->fDpFront0   ,"dp0f"     ,Form("%s: Track P0-P(front)" ,Folder), 200,  -5. ,  5. ,Folder);
-  HBook1F(Hist->fDpFront2   ,"dp2f"     ,Form("%s: Track P2-P(front)" ,Folder), 200,  -5. ,  5. ,Folder);
-  HBook1F(Hist->fPStOut     ,"pstout"   ,Form("%s: Track P(ST_Out)  " ,Folder), 400,  90  ,110. ,Folder);
+  HBook1F(Hist->fFitMomErr  ,"momerr"   ,Form("%s: Track FitMomError" ,Folder), 200,   0  ,  2.5 ,Folder);
+  HBook1F(Hist->fPFront     ,"pf"       ,Form("%s: Track P(front)   " ,Folder), 400,   0  ,  110. ,Folder);
+  HBook1F(Hist->fDpFront    ,"dpf"      ,Form("%s: Track P-P(front) " ,Folder), 200,  -5. ,  50. ,Folder);
+  HBook1F(Hist->fDpFront0   ,"dp0f"     ,Form("%s: Track P0-P(front)" ,Folder), 200,  -5. ,  50. ,Folder);
+  HBook1F(Hist->fDpFront2   ,"dp2f"     ,Form("%s: Track P2-P(front)" ,Folder), 200,  -5. ,  50. ,Folder);
+  HBook1F(Hist->fPStOut     ,"pstout"   ,Form("%s: Track P(ST_Out)  " ,Folder), 400,   0  ,110. ,Folder);
   HBook1F(Hist->fDpFSt      ,"dpfst"    ,Form("%s: Track Pf-Psto"     ,Folder), 200,  -5  ,  5. ,Folder);
   HBook2F(Hist->fDpFVsZ1    ,"dpf_vs_z1",Form("%s: Track DPF Vs Z1"   ,Folder), 200, -2000.,0,200,-5.,5,Folder);
 
-  HBook1F(Hist->fPt         ,"pt"       ,Form("%s: Track Pt"          ,Folder), 600, 75,95,Folder);
+  HBook1F(Hist->fPt         ,"pt"       ,Form("%s: Track Pt"          ,Folder), 600, 50,150,Folder);
   HBook1F(Hist->fCosTh      ,"costh"    ,Form("%s: Track cos(theta)"  ,Folder), 100,-1,1,Folder);
-  HBook1F(Hist->fChi2       ,"chi2"     ,Form("%s: Track chi2 total"  ,Folder), 200, 0,200,Folder);
+  HBook1F(Hist->fChi2       ,"chi2"     ,Form("%s: Track chi2 total"  ,Folder), 200, 0,400,Folder);
   HBook1F(Hist->fNDof       ,"ndof"     ,Form("%s: Number of DOF"     ,Folder), 200, 0,200,Folder);
-  HBook1F(Hist->fChi2Dof    ,"chi2d"    ,Form("%s: track chi2/N(dof)" ,Folder), 500, 0, 10,Folder);
+  HBook1F(Hist->fChi2Dof    ,"chi2d"    ,Form("%s: track chi2/N(dof)" ,Folder), 500, 0, 20,Folder);
   HBook1F(Hist->fNActive    ,"nactv"    ,Form("%s: N(active)"         ,Folder), 200, 0,200,Folder);
   HBook1F(Hist->fT0         ,"t0"       ,Form("%s: track T0"          ,Folder), 200, 0,2000,Folder);
-  HBook1F(Hist->fT0Err      ,"t0err"    ,Form("%s: track T0Err"       ,Folder), 100, 0,  10,Folder);
+  HBook1F(Hist->fT0Err      ,"t0err"    ,Form("%s: track T0Err"       ,Folder), 100, 0,  20,Folder);
   HBook1F(Hist->fQ          ,"q"        ,Form("%s: track Q"           ,Folder),   4,-2,   2,Folder);
-  HBook1F(Hist->fFitCons[0] ,"fcon"     ,Form("%s: track fit cons [0]",Folder), 200, 0,   1,Folder);
-  HBook1F(Hist->fFitCons[1] ,"fcon1"    ,Form("%s: track fit cons [1]",Folder), 1000, 0,   0.1,Folder);
-  HBook1F(Hist->fD0         ,"d0"       ,Form("%s: track D0      "    ,Folder), 200,-200, 200,Folder);
-  HBook1F(Hist->fZ0         ,"z0"       ,Form("%s: track Z0      "    ,Folder), 200,-2000,2000,Folder);
-  HBook1F(Hist->fTanDip     ,"tdip"     ,Form("%s: track tan(dip)"    ,Folder), 200, 0.0 ,2.0,Folder);
+  HBook1F(Hist->fFitCons[0] ,"fcon"     ,Form("%s: track fit cons [0]",Folder), 200, 0,   2,Folder);
+  HBook1F(Hist->fFitCons[1] ,"fcon1"    ,Form("%s: track fit cons [1]",Folder), 1000, 0,   0.2,Folder);
+  HBook1F(Hist->fD0         ,"d0"       ,Form("%s: track D0      "    ,Folder), 200,-270, 270,Folder);
+  HBook1F(Hist->fZ0         ,"z0"       ,Form("%s: track Z0      "    ,Folder), 200,-2070,2070,Folder);
+  HBook1F(Hist->fTanDip     ,"tdip"     ,Form("%s: track tan(dip)"    ,Folder), 200, 0.0 ,3.0,Folder);
   HBook1F(Hist->fResid      ,"resid"    ,Form("%s: hit residuals"     ,Folder), 500,-0.5 ,0.5,Folder);
   HBook1F(Hist->fAlgMask    ,"alg"      ,Form("%s: algorithm mask"    ,Folder),  10,  0, 10,Folder);
 
-  HBook1F(Hist->fDt         ,"dt"       ,Form("%s: track delta(T)"    ,Folder), 200,-20  ,20 ,Folder);
-  HBook1F(Hist->fChi2Match  ,"chi2tcm"  ,Form("%s: chi2(t-c match)"   ,Folder), 250,  0  ,250 ,Folder);
+  HBook1F(Hist->fDt         ,"dt"       ,Form("%s: track delta(T)"    ,Folder), 200,-40  ,20 ,Folder);
+  HBook1F(Hist->fChi2Match  ,"chi2tcm"  ,Form("%s: chi2(t-c match)"   ,Folder), 250,  -200  ,350 ,Folder);
 
-  HBook1F(Hist->fDx         ,"dx"       ,Form("%s: track delta(X)"    ,Folder), 200,-500 ,500,Folder);
-  HBook1F(Hist->fDy         ,"dy"       ,Form("%s: track delta(Y)"    ,Folder), 200,-500 ,500,Folder);
-  HBook1F(Hist->fDz         ,"dz"       ,Form("%s: track delta(Z)"    ,Folder), 200,-250 ,250,Folder);
-  HBook1F(Hist->fDu         ,"du"       ,Form("%s: track-cluster DU)" ,Folder), 250,-250 ,250,Folder);
-  HBook1F(Hist->fDv         ,"dv"       ,Form("%s: track-cluster DV)" ,Folder), 200,-100 ,100,Folder);
+  HBook1F(Hist->fDx         ,"dx"       ,Form("%s: track delta(X)"    ,Folder), 200,-700 ,600,Folder);
+  HBook1F(Hist->fDy         ,"dy"       ,Form("%s: track delta(Y)"    ,Folder), 200,-700 ,600,Folder);
+  HBook1F(Hist->fDz         ,"dz"       ,Form("%s: track delta(Z)"    ,Folder), 200,-500 ,250,Folder);
+  HBook1F(Hist->fDu         ,"du"       ,Form("%s: track-cluster DU)" ,Folder), 250,-500 ,300,Folder);
+  HBook1F(Hist->fDv         ,"dv"       ,Form("%s: track-cluster DV)" ,Folder), 200,-200 ,200,Folder);
   HBook2F(Hist->fDvVsDu     ,"dv_vs_du" ,Form("%s: Track Dv Vs Du"    ,Folder), 100, -250,250,100,-100.,100,Folder);
   HBook1F(Hist->fPath       ,"path"     ,Form("%s: track sdisk"       ,Folder),  50,   0 ,500,Folder);
   HBook2F(Hist->fDuVsPath   ,"du_vs_path",Form("%s: Track Du Vs Path" ,Folder),  50,   0 ,500,200,-200.,200.,Folder);
@@ -270,8 +244,8 @@ void TValidationModule2::BookTrackHistograms(TrackHist_t* Hist, const char* Fold
   HBook1F(Hist->fLogLHRTrk  ,"llhr_trk" ,Form("%s: LogLH(e/m) Trk"    ,Folder), 200,-20 , 20,Folder);
   HBook1F(Hist->fLogLHR     ,"llhr"     ,Form("%s: LogLH(e/m)"        ,Folder), 200,-100 ,100,Folder);
 
-  HBook1F(Hist->fPdgCode    ,"pdg"      ,Form("%s: track PDG code"    ,Folder), 100,-50,50,Folder);
-  HBook1F(Hist->fFrGH       ,"fgh"      ,Form("%s: Fraction Goog Hits",Folder), 100, 0,1,Folder);
+  HBook1F(Hist->fPdgCode    ,"pdg"      ,Form("%s: track PDG code"    ,Folder),2350  ,-100,2250,Folder);
+  HBook1F(Hist->fFrGH       ,"fgh"      ,Form("%s: Fraction Goog Hits",Folder), 100, -5,5,Folder);
 
   HBook2F(Hist->fNEPlVsNHPl ,"nep_vs_nhp",Form("%s: Track NEXP vs NHit",Folder), 100, 0,100,100,0.,100,Folder);
   HBook2F(Hist->fNDPlVsNHPl ,"ndp_vs_nhp",Form("%s: Track NDIF vs NHit",Folder), 100, 0,100,100,0.,100,Folder);
@@ -280,11 +254,15 @@ void TValidationModule2::BookTrackHistograms(TrackHist_t* Hist, const char* Fold
 
   HBook1F(Hist->fFrE1   ,"fre1"   ,Form("%s: E1/Etot"       ,Folder),200, 0,  1,Folder);
   HBook1F(Hist->fFrE2   ,"fre2"   ,Form("%s: (E1+E2)/Etot"  ,Folder),200, 0,  1,Folder);
+  
+  HBook1F(Hist->fPrecopr  ,"precopr"    ,Form("%s:True momentum of reco_protons",Folder), 2000,  0, 400,Folder); //
+  HBook2F(Hist->fPrecoVsP ,"preco_vs_p" ,Form("%s:Reco_mom vs true",Folder), 2000, 0,400, 2000, 0,400, Folder); //
+
 }
 
 //-----------------------------------------------------------------------------
 void TValidationModule2::BookEventHistograms(EventHist_t* Hist, const char* Folder) {
-  char name [200];
+  //  char name [200];
   //  char title[200];
 
   HBook1F(Hist->fEleCosTh  ,"ce_costh" ,Form("%s: Conversion Electron Cos(Theta)"  ,Folder),100,-1,1,Folder);
@@ -306,33 +284,7 @@ void TValidationModule2::BookEventHistograms(EventHist_t* Hist, const char* Fold
   HBook1F(Hist->fBestHyp[0],"bfh0"     ,Form("%s: Best Fit Hyp[0](e-,e+,mu-,mu+)"  ,Folder),5,0,5,Folder);
   HBook1F(Hist->fBestHyp[1],"bfh1"     ,Form("%s: Best Fit Hyp[1](e-,e+,mu-,mu+)"  ,Folder),5,0,5,Folder);
   HBook1F(Hist->fNGenp     ,"ngenp"    ,Form("%s: N(Gen Particles)"                ,Folder),500,0,500,Folder);
-
-  HBook1F(Hist->fMcEnergy  ,"mce"      ,Form("%s: MC energy"                       ,Folder),1000,0,200,Folder);//the fake McEnergy
-
-  //  char  name[200];
-  for (int i=0; i<2; i++) {
-    sprintf(name,"ncch_%i",i);
-    HBook1F(Hist->fNCaloCrystalHits[i],name,Form("%s: N(calo crystal hits) [%i]",Folder,i),500,0,1000,Folder);
-    sprintf(name,"ncch_vs_vane_%i",i);
-    HBook2F(Hist->fNCaloHitsVsVane[i],name,Form("%s: N(calo crystal hits) vs vane[%i]",Folder,i),4,0,4,200,0,200,Folder);
-    sprintf(name,"ncch_vs_row_%i",i);
-    HBook2F(Hist->fNCaloHitsVsRow[i],name,Form("%s: N(calo crystal hits) vs row [%i]",Folder,i),20,0,20,200,0,200,Folder);
-    sprintf(name,"ncch_vs_col_%i",i);
-    HBook2F(Hist->fNCaloHitsVsCol[i],name,Form("%s: N(calo crystal hits) vs col [%i]",Folder,i),50,0,50,200,0,200,Folder);
-  }
-
-  for (int i=0; i<4; i++) {
-    HBook1F(Hist->fETot        [i],Form("etot_%i"    ,i),Form("%s: Etot[%i]",Folder,i), 300, 0,150,Folder);
-    HBook2F(Hist->fECrVsR      [i],Form("ecr_vs_r_%i",i),Form("%s: E Cr Vs R [%i]"    ,Folder,i), 100, 0,1000,500,0,100,Folder);
-    HBook2F(Hist->fNCrVsR      [i],Form("ncr_vs_r_%i",i),Form("%s: N Cr Vs R [%i]"    ,Folder,i), 100, 0,1000,100,0,100,Folder);
-
-    HBook2F(Hist->fNCrystalHitsVsR[i],Form("ncrh_vs_r_%i",i),Form("%s: N Crystal Hits[%i] vs R",Folder,i), 100, 0, 1000,100,0,100,Folder);
-    HBook2F(Hist->fNHitCrystalsVsR[i],Form("nhcr_vs_r_%i",i),Form("%s: N Hit Crystals[%i] vs R",Folder,i), 100, 0, 1000,100,0,100,Folder);
-  }
-
-  HBook1F(Hist->fNHitCrystalsTot,"nhcr_tot",Form("%s: NHit Crystals Tot",Folder), 100, 0,100,Folder);
-  HBook1F(Hist->fECal,"ecal",Form("%s: E(cal), sum over both disks",Folder), 500, 0,250,Folder);
-  HBook1F(Hist->fECalOverEKin,"ec_over_ek",Form("%s: E(cal)/E(kin)",Folder), 200, 0,2,Folder);
+  HBook1F(Hist->fQSH       ,"qsh"      ,Form("%s: Charge for each SH"              ,Folder),500,0,500,Folder); // SH charge
 }
 
 //-----------------------------------------------------------------------------
@@ -551,7 +503,10 @@ void TValidationModule2::BookHistograms() {
   book_track_histset[ 61] = 1;		// Set "C" tracks, alg_mask = 3
   book_track_histset[ 62] = 1;		// Set "C" tracks, alg_mask = 3, T > 700
 
-  
+  //
+  book_track_histset[ 63] = 1;          // tracks with P>350                            <---------------
+  book_track_histset[ 64] = 1;          // tracks with 255<P<265                        <---------------
+  //
 
   for (int i=0; i<kNTrackHistSets; i++) {
     if (book_track_histset[i] != 0) {
@@ -587,26 +542,6 @@ void TValidationModule2::BookHistograms() {
     }
   }
 //-----------------------------------------------------------------------------
-// book calorimeter histograms
-//-----------------------------------------------------------------------------
-  int book_calo_histset[kNCaloHistSets];
-  for (int i=0; i<kNCaloHistSets; i++) book_calo_histset[i] = 0;
-
-  book_calo_histset[0] = 1;		// all crystals
-  book_calo_histset[1] = 1;		// all crystals, e > 0
-  book_calo_histset[2] = 1;		// all crystals, e > 0.1
-  book_calo_histset[3] = 1;		// all crystals, e > 1.0
-
-  for (int i=0; i<kNCaloHistSets; i++) {
-    if (book_calo_histset[i] != 0) {
-      sprintf(folder_name,"cal_%i",i);
-      fol = (TFolder*) hist_folder->FindObject(folder_name);
-      if (! fol) fol = hist_folder->AddFolder(folder_name,folder_name);
-      fHist.fCalo[i] = new CaloHist_t;
-      BookCaloHistograms(fHist.fCalo[i],Form("Hist/%s",folder_name));
-    }
-  }
-//-----------------------------------------------------------------------------
 // book Genp histograms
 //-----------------------------------------------------------------------------
   int book_genp_histset[kNGenpHistSets];
@@ -632,22 +567,21 @@ void TValidationModule2::BookHistograms() {
 // need MC truth branch
 //-----------------------------------------------------------------------------
 void TValidationModule2::FillEventHistograms(EventHist_t* Hist) {
-  double            cos_th, dio_wt, xv, yv, rv, zv, p;
-  double            e, m, r;
+  double            cos_th(-2.), dio_wt(-1.), xv(0.), yv(0.), rv(0.), zv(0.), p(0);
   TLorentzVector    mom;
 
-  fParticle->Momentum(mom);
+  if (fParticle) {
+    fParticle->Momentum(mom);
+    p      = mom.P();
 
-  p      = mom.P();
+    cos_th = mom.Pz()/p;
+    dio_wt = TStntuple::DioWeightAl(p);
 
-  cos_th = mom.Pz()/p;
-
-  dio_wt = TStntuple::DioWeightAl(p);
-
-  xv = fParticle->Vx()+3904.;
-  yv = fParticle->Vy();
-  rv = sqrt(xv*xv+yv*yv);
-  zv = fParticle->Vz();
+    xv = fParticle->Vx()+3904.;
+    yv = fParticle->Vy();
+    rv = sqrt(xv*xv+yv*yv);
+    zv = fParticle->Vz();
+  }
 
   Hist->fEleMom->Fill(p);
   Hist->fDioMom->Fill(p,dio_wt);
@@ -695,178 +629,17 @@ void TValidationModule2::FillEventHistograms(EventHist_t* Hist) {
     dt = t0_cls-sh->Time() + 15;
     Hist->fDtClS->Fill(dt);
     Hist->fSHTime->Fill(sh->Time());
+    Hist->fQSH->Fill(sh->Energy()); // SH chargesh->Energy()
 
     if (fabs(dt+15.)< 50) n_good_hits += 1;
   }
-
   Hist->fNGoodSH->Fill(n_good_hits);
 
   Hist->fNHyp->Fill(fNHyp);
   Hist->fBestHyp[0]->Fill(fBestHyp[0]);
   Hist->fBestHyp[1]->Fill(fBestHyp[1]);
-  Hist->fNGenp->Fill(fNGenp);
-//-----------------------------------------------------------------------------
-// crystals - count crystals with E > 1MeV
-//-----------------------------------------------------------------------------
-  TCalHitData* cch;
 
-  int n_cch_1mev = 0;
-
-  if (fCalorimeterType == 1) {
-//-----------------------------------------------------------------------------
-// vane calorimeter
-//-----------------------------------------------------------------------------
-    int  nhits_vane[2][4], nhits_row [2][20], nhits_col[2][50];
-    int  crystal_id, vane_id, local_id, vane_row, vane_col;
-
-    for (int i=0; i<4; i++) {
-      nhits_vane[0][i] = 0;
-      nhits_vane[1][i] = 0;
-    }
-      
-    for (int i=0; i<20; i++) {
-      nhits_row[0][i] = 0;
-      nhits_row[1][i] = 0;
-    }
-
-    for (int i=0; i<50; i++) {
-      nhits_col[0][i] = 0;
-      nhits_col[1][i] = 0;
-    }
-      
-    for (int ic=0; ic<fNCalHits; ic++) {
-      cch        = fCalDataBlock->CalHitData(ic);
-      crystal_id = cch->ID();
-
-      if (cch->Energy() > 1.) {
-	n_cch_1mev += 1;
-      }
-      // for each crystal determine its row and column
-      // the following is for vanes
-      vane_id  = crystal_id/484.;
-      local_id = crystal_id-vane_id*484;
-      vane_row = local_id/44;
-      vane_col = local_id-vane_row*44;
-      
-      nhits_vane[0][vane_id ] += 1;
-      nhits_row [0][vane_row] += 1;
-      nhits_col [0][vane_col] += 1;
-      
-      if (cch->Energy() > 1.) {
-	nhits_row [1][vane_row] += 1;
-	nhits_col [1][vane_col] += 1;
-	nhits_vane[1][vane_id ] += 1;
-      }
-    }
-
-    Hist->fNCaloCrystalHits[0]->Fill(fNCalHits);
-    Hist->fNCaloCrystalHits[1]->Fill(n_cch_1mev);
-
-    for (int iv=0; iv<4; iv++) {
-      Hist->fNCaloHitsVsVane[0]->Fill(iv,nhits_vane[0][iv]);
-      Hist->fNCaloHitsVsVane[1]->Fill(iv,nhits_vane[1][iv]);
-    }
-
-    for (int ir=0; ir<20; ir++) {
-      Hist->fNCaloHitsVsRow[0]->Fill(ir,nhits_row[0][ir]);
-      Hist->fNCaloHitsVsRow[1]->Fill(ir,nhits_row[1][ir]);
-    }
-
-    for (int ic=0; ic<50; ic++) {
-      Hist->fNCaloHitsVsCol[0]->Fill(ic,nhits_col[0][ic]);
-      Hist->fNCaloHitsVsCol[1]->Fill(ic,nhits_col[1][ic]);
-    }
-  }
-  else if (fCalorimeterType == 2) {
-//-----------------------------------------------------------------------------
-// disk calorimeter
-//-----------------------------------------------------------------------------
-    int      ndisks, n_hit_crystals[4], n_hit_crystals_tot;
-    double   etot[4];
-
-    TCalHitData* hit;
-
-    //    TDisk*       disk;
-    //    TEvdCrystal* cr;
-
-    ndisks = fDiskCalorimeter->NDisks();
-
-    int   bin, hit_id, idisk, nhits, nhits_r[4][100], n_hit_crystals_r[4][100];
-
-    for (int id=0; id<ndisks; id++) {
-      n_hit_crystals[id] = 0;
-      etot[id]           = 0;
-
-      for (int ib=0; ib<100; ib++) {
-	nhits_r         [id][ib] = 0;
-	n_hit_crystals_r[id][ib] = 0;
-      }
-    }
-
-    nhits = fCalDataBlock->NHits();
-
-    for (int i=0; i< nhits; i++) {
-      hit    = fCalDataBlock->CalHitData(i);
-
-      hit_id = hit->ID();
-      idisk  = fDiskCalorimeter->DiskNumber(hit_id);
-      r      = fDiskCalorimeter->CrystalRadius(hit_id);
-      e      = hit->Energy(); 
-
-      etot          [idisk] += e;
-      n_hit_crystals[idisk] += 1;
-
-      Hist->fECrVsR[idisk]->Fill(r,e);
-      Hist->fNCrVsR[idisk]->Fill(r,1);
-
-      bin  = (int) (r/10.);
-
-      nhits_r         [idisk][bin] += 1;
-//-----------------------------------------------------------------------------
-// this is not correct, one needs to check whether this crystal has been hit,
-// for the moment, to get going, ignore that
-//-----------------------------------------------------------------------------
-      n_hit_crystals_r[idisk][bin] += 1;
-    }
-
-    n_hit_crystals_tot = 0;
-
-    double ecal = 0;
-    for (int id=0; id<ndisks; id++) {
-      n_hit_crystals_tot += n_hit_crystals[id];
-      ecal += etot[id];
-//-----------------------------------------------------------------------------
-// fill 'per-disk' histograms
-//-----------------------------------------------------------------------------
-      Hist->fETot[id]->Fill(etot[id]);
-
-//-----------------------------------------------------------------------------
-// 100 is fixed by the number of bins in the radial distributions
-//-----------------------------------------------------------------------------
-      for (int ib=0; ib<100; ib++) {
-	r = (ib+0.5)*10.;
-	Hist->fNCrystalHitsVsR[id]->Fill(r,nhits_r         [id][ib]);
-	Hist->fNHitCrystalsVsR[id]->Fill(r,n_hit_crystals_r[id][ib]);
-      }
-    }
-
-    Hist->fNHitCrystalsTot->Fill(n_hit_crystals_tot);
-    Hist->fECal->Fill(ecal);
-
-    double ekin(-1.);
-//-----------------------------------------------------------------------------
-// there is an inconsistency in the SIMP block filling - in Mu2e offline 
-// the particle momentumis is kept in MeV/c, while the PDG mass  -in GeV/c^2..
-// thus the energy is screwed up... kludge around
-// assign muon mass
-//-----------------------------------------------------------------------------
-    if (fSimp) {
-      p    = fSimp->fStartMom.P();
-      m    = 105.658; // in MeV
-      ekin = sqrt(p*p+m*m)-m;
-    }
-    Hist->fECalOverEKin->Fill(ecal/ekin);
-  }
+  Hist->fNGenp->Fill(fNGenp);  
 }
 
 //--------------------------------------------------------------------------------
@@ -952,55 +725,6 @@ void TValidationModule2::FillHelixHistograms(HelixHist_t*   Hist, TStnHelix*    
 }
 
 //-----------------------------------------------------------------------------
-void TValidationModule2::FillCaloHistograms(CaloHist_t* Hist, TStnCrystal* Cr) {
-
-  int                    nhits;
-  float                  t, e, r, e700, n700;
-  TCalHitData*           hit;
-
-  // determine crystal coordinates
-
-  TDisk* disk = Cr->Disk();
-
-  int idisk = disk->SectionID();
-  // time needs to be defiend
-  //    t  = Cr->Time();
-  e     = Cr->Energy();
-  r     = Cr->Radius();
-  nhits = Cr->NHits();
-
-  Hist->fVaneID->Fill(idisk);
-
-  Hist->fEnergy  [idisk]->Fill(e);
-  Hist->fNHits   [idisk]->Fill(nhits);
-  //    Hist->fTime    [idisk]->Fill(t);
-  Hist->fRadius  [idisk]->Fill(r);
-  Hist->fRadiusWE[idisk]->Fill(r,e);
-    
-  e700 = 0;
-  n700 = 0;
-  for (int i=0; i<nhits; i++) {
-    hit  = Cr->CalHitData(i);
-    t   = hit->Time();
-    Hist->fTime[idisk]->Fill(t);
-    if (t > 700.) {
-      n700 += 1;
-      e700 += hit->Energy();
-      Hist->fT700[idisk]->Fill(t);
-    }
-  }
-
-  Hist->fE700   [idisk]->Fill(e700);
-  Hist->fN700   [idisk]->Fill(n700);
-
-  if (n700 > 0) {
-    Hist->fR700  [idisk]->Fill(r);
-    Hist->fRWE700[idisk]->Fill(r,e700);
-  }
-}
-
-
-//-----------------------------------------------------------------------------
 void TValidationModule2::FillClusterHistograms(ClusterHist_t* Hist, TStnCluster* Cluster) {
   int   row, col;
   float  x, y, z, r;
@@ -1068,6 +792,11 @@ void TValidationModule2::FillGenpHistograms(GenpHist_t* Hist, TGenParticle* Genp
   Hist->fR0->Fill(r0);
   Hist->fP->Fill(p);
   Hist->fCosTh->Fill(cos_th);
+ 
+  
+  if(Genp->GetPdgCode() == 2212 || Genp->GetPdgCode() == 1000010020) // is proton or deutons
+      Hist->fPpr->Fill(p);
+  
 }
 
 //-----------------------------------------------------------------------------
@@ -1086,7 +815,7 @@ void TValidationModule2::FillTrackHistograms(TrackHist_t* Hist, TStnTrack* Track
 
   TLorentzVector  mom;
   double          r;
-  int             itrk;
+  int             itrk; 
   TrackPar_t*     tp;
 					// pointer to local track parameters
   itrk = Track->Number();
@@ -1283,8 +1012,17 @@ void TValidationModule2::FillTrackHistograms(TrackHist_t* Hist, TStnTrack* Track
 
   Hist->fFrE1->Fill(fre1);
   Hist->fFrE2->Fill(fre2);
-}
-
+   
+  
+  if (Track->fPdgCode == 2212 || Track->fPdgCode == 1000010020) { // is proton or deutons
+    TSimParticle* simp = fSimpBlock->FindParticle(Track->fPartID);
+    float p_genp  = simp->StartMom()->P();
+    Hist->fPrecoVsP->Fill(p_genp,Track->fP); 
+    Hist->fPrecopr->Fill(p_genp);
+  }
+  
+ 
+} 
 
 //-----------------------------------------------------------------------------
 // register data blocks and book histograms
@@ -1296,7 +1034,7 @@ int TValidationModule2::BeginJob() {
   RegisterDataBlock("CprTimeClusterBlock" ,"TStnTimeClusterBlock",&fTimeClusterBlock);
   RegisterDataBlock("CalTrackSeedBlock","TStnTrackSeedBlock",&fTrackSeedBlock);
   RegisterDataBlock("HelixBlock"    ,"TStnHelixBlock"    ,&fHelixBlock);
-  RegisterDataBlock("TrackBlockDem" ,"TStnTrackBlock"    ,&fTrackBlock  );
+  RegisterDataBlock(fTrackBlockName.Data() ,"TStnTrackBlock"    ,&fTrackBlock  );
   RegisterDataBlock("ClusterBlock"  ,"TStnClusterBlock"  ,&fClusterBlock);
   RegisterDataBlock("CalDataBlock"  ,"TCalDataBlock"     ,&fCalDataBlock);
   RegisterDataBlock("StrawDataBlock","TStrawDataBlock"   ,&fStrawDataBlock);
@@ -1306,15 +1044,13 @@ int TValidationModule2::BeginJob() {
 // book histograms
 //-----------------------------------------------------------------------------
   BookHistograms();
-
-  // fill "fake" histogram ... total number of generated events: 20,000 / 50 bins
-  for (int i=301; i<551; i++) {
-    fHist.fEvent[0]->fMcEnergy->SetBinContent(i,80.);
-  }
 //-----------------------------------------------------------------------------
 // initialize likelihood histograms
 //-----------------------------------------------------------------------------
-  fTrackID->SetMinT0(fMinT0);
+  // fTrackID->SetMinT0(fMinT0);
+  fTrackID->SetMaxMomErr(0.3); // MDC2018
+  fTrackID->SetMaxT0Err (2.);
+
 //-----------------------------------------------------------------------------
 // PID initialization: read the likelihood templates
 //-----------------------------------------------------------------------------
@@ -1819,6 +1555,19 @@ void TValidationModule2::FillHistograms() {
       }
     }
 //-----------------------------------------------------------------------------
+// TRK 63: tracks with P>=350                                                      <-----------------
+// TRK 64: tracks with 265>=P>=255                                                 <-----------------
+//-----------------------------------------------------------------------------
+    if (trk->fP >= 350) {
+      FillTrackHistograms(fHist.fTrack[63],trk);
+      GetAna()->GetHeaderBlock()->Print(Form("63: momentum: %12.5f",trk->fP));
+    }
+    else if(trk->fP >= 255 && trk->fP <= 265){
+      FillTrackHistograms(fHist.fTrack[64],trk);
+      GetAna()->GetHeaderBlock()->Print(Form("64: momentum: %12.5f",trk->fP));
+    }
+
+//-----------------------------------------------------------------------------
 // split tracks by the algorithm mask: 1 , 2 , or 3
 //-----------------------------------------------------------------------------
     alg_mask = trk->AlgMask();
@@ -1880,53 +1629,6 @@ void TValidationModule2::FillHistograms() {
     else if (id == 1         ) FillClusterHistograms(fHist.fCluster[7],cl);
   }
 //-----------------------------------------------------------------------------
-// calorimeter histograms
-//-----------------------------------------------------------------------------
-  TDisk*         disk;
-  TStnCrystal*   cr;
-
-  if (fCalorimeterType == 2) {
-    int nd = fDiskCalorimeter->NDisks();
-
-    for (int i=0; i<nd; i++) {
-      disk = fDiskCalorimeter->Disk(i);
-      for (int ic=0; ic<disk->NCrystals(); ic++) {
-	cr = disk->Crystal(ic);
-	FillCaloHistograms(fHist.fCalo[0],cr);
-
-	if (cr->Energy() > 0) {
-	  FillCaloHistograms(fHist.fCalo[1],cr);
-	}
-	if (cr->Energy() > 0.1) {
-	  FillCaloHistograms(fHist.fCalo[2],cr);
-	}
-	if (cr->Energy() > 1.0) {
-	  FillCaloHistograms(fHist.fCalo[3],cr);
-	}
-      }
-    }
-  }
-  //-----------------------------------------------------------------------------
-  // radial distributions for crystals
-  //-----------------------------------------------------------------------------
-  static int first_entry(1);
-
-  if (first_entry == 1) {
-    if (fCalorimeterType == 2) {
-      int nd = fDiskCalorimeter->NDisks();
-	
-      for (int i=0; i<nd; i++) {
-	disk = fDiskCalorimeter->Disk(i);
-	for (int ic=0; ic<disk->NCrystals(); ic++) {
-	  cr = disk->Crystal(ic);
-
-	  fHist.fCrystalR[i]->Fill(cr->Radius());
-	}
-      }
-    }
-  }
-
-//-----------------------------------------------------------------------------
 // fill GENP histograms
 // GEN_0: all particles
 //-----------------------------------------------------------------------------
@@ -1941,7 +1643,6 @@ void TValidationModule2::FillHistograms() {
       }
     }
   }
-  first_entry = 0;
 }
 
 
@@ -1957,8 +1658,6 @@ int TValidationModule2::Event(int ientry) {
   TStnTrack*            track;
   int                   id_word;
   TLorentzVector        mom;
-
-  TDiskCalorimeter::GeomData_t disk_geom;
 
   fTrackBlock  ->GetEntry(ientry);
   fHelixBlock  ->GetEntry(ientry);
@@ -1989,32 +1688,19 @@ int TValidationModule2::Event(int ientry) {
 					// may want to revisit the definition of fSimp
   fSimp     = fSimpBlock->Particle(0);
 
-  fParticle->Momentum(mom);
+
+  if (fParticle) {
+    fParticle->Momentum(mom);
 					// this is a kludge, to be removed at the next 
 					// ntupling 
   //  fEleE     = fParticle->Energy();
-  p         = mom.P();
+    p         = mom.P();
+  }
+  else {
+    p = 0.;
+  }
   fEleE     = sqrt(p*p+0.511*0.511);
 
-
-  if (fDiskCalorimeter->Initialized() == 0) {
-    disk_geom.fNDisks = fCalDataBlock->NDisks();
-
-    for (int i=0; i<disk_geom.fNDisks; i++) {
-      //      disk_geom.fNCrystals[i] = fCalDataBlock->fNCrystals[i];
-      disk_geom.fRMin[i]      = fCalDataBlock->fRMin[i];
-      disk_geom.fRMax[i]      = fCalDataBlock->fRMax[i];
-      disk_geom.fZ0  [i]      = fCalDataBlock->fZ0  [i];
-    }
-
-    disk_geom.fHexSize          = fCalDataBlock->CrystalSize()*2;
-    // kludge , so far
-    disk_geom.fMinFraction      = 1.; // fCalDataBlock->MinFraction();
-    disk_geom.fWrapperThickness = fCalDataBlock->WrapperThickness();
-    disk_geom.fShellThickness   = fCalDataBlock->ShellThickness();
-
-    fDiskCalorimeter->Init(&disk_geom);
-  }
 
   fNTimeClusters[0] = fTimeClusterBlock->NTimeClusters();
   
@@ -2023,8 +1709,6 @@ int TValidationModule2::Event(int ientry) {
   fNCalHits   = fCalDataBlock->NHits();
   fNStrawHits = fStrawDataBlock->NHits();
   fNHelices[0]= fHelixBlock->NHelices();
-
-  fDiskCalorimeter->InitEvent(fCalDataBlock);
 
   fNHyp       = -1;
   fBestHyp[0] = -1;
@@ -2157,8 +1841,6 @@ int TValidationModule2::Event(int ientry) {
   if (fNClusters == 0) fCluster = 0;
   else                 fCluster = fClusterBlock->Cluster(0);
 
-  //  fDiskCalorimeter->InitEvent(fCalDataBlock);
-
   FillHistograms();
 
   Debug();
@@ -2225,7 +1907,7 @@ void TValidationModule2::Debug() {
 //-----------------------------------------------------------------------------
 // bit 5: events with N(tracks) > 1
 //-----------------------------------------------------------------------------
-  if (GetDebugBit(5) == 1) {
+   if (GetDebugBit(5) == 1) {
     int ntrk = fTrackBlock->NTracks();
     if (ntrk > 1) {
       GetHeaderBlock()->Print(Form("NTracks = %i5",ntrk));

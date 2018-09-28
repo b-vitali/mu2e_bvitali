@@ -35,7 +35,7 @@ physics : {
     }
     
     filters  : { @table::filters 
-	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.user.eminus_gun_stnmaker.xxx.000002.stn" }
+	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.user.eminus_gun_stnmaker.xxx.000003.stn" }
     }
 
     analyzers : {
@@ -57,7 +57,7 @@ physics : {
 	  @sequence::Stntuple.cal_reco       ,
 	  @sequence::Stntuple.dem_reco       ,
 	  @sequence::Stntuple.stnmaker_dem
-	 ]
+	  ]
 
 #    trigger_paths : [ path_gen_digi_reco_stn_tcm_dem ]
     trigger_paths : [ p1 ]
@@ -65,13 +65,13 @@ physics : {
     end_paths     : [  ]
 }
 
-services.TFileService.fileName            : "nts.user.eminus_gun_stnmaker.xxx.000002.root"
+services.TFileService.fileName            : "nts.user.eminus_gun_stnmaker.xxx.000003.root"
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST (.art) file to be written out
 #-----------------------------------------------------------------------------
 #physics.out                               : [ detectorOutput ]
 #outputs.detectorOutput.SelectEvents       : [ path_gen_digi_reco_stn_tcm_dem]
-outputs.detectorOutput.fileName           : "sim.user.eminus_gun_stnmaker.xxx.000002.art"
+outputs.detectorOutput.fileName           : "sim.user.eminus_gun_stnmaker.xxx.000003.art"
 #------------------------------------------------------------------------------
 # uncomment to avoid waisting time on the initialization of detailed neutron 
 # cross sections - that shouldn't affect the electron simulation 
