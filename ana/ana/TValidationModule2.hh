@@ -14,6 +14,7 @@
 #include "Stntuple/obj/TStnHelixBlock.hh"
 #include "Stntuple/obj/TStnTrackSeedBlock.hh"
 #include "Stntuple/obj/TStnTrackBlock.hh"
+
 #include "Stntuple/obj/TStnClusterBlock.hh"
 #include "Stntuple/obj/TCalDataBlock.hh"
 #include "Stntuple/obj/TStrawDataBlock.hh"
@@ -26,6 +27,9 @@
 
 #include "Stntuple/alg/TStnTrackID.hh"
 #include "Stntuple/alg/TEmuLogLH.hh"
+
+#include "Stntuple/obj/TTrackStrawHitBlock.hh"
+#include "Stntuple/obj/TTrackStrawHitData.hh"
 
 class TValidationModule2: public TStnModule {
 public:
@@ -96,6 +100,11 @@ public:
     TH1F*    fBestHyp[2];		// [0]: by chi2, [1]: by fit consistency
     TH1F*    fNGenp;                    // N(particles in GENP block)
     TH1F*    fQSH;                      // SH charge
+    TH2F*    fNSHVsPreco;               // bastiano proton eff
+    TH2F*    fLumVsNTrk;                // number of trks and luminosity
+    TH2F*    fLastZVsPreco;             // bastiano proton eff
+    TH2F*    fFirstZVsPreco;            // bastiano proton eff
+
   };
 
   struct TimeClusterHist_t {
@@ -103,6 +112,7 @@ public:
     TH1F*    fNComboHits;
     TH1F*    fT0;
     TH1F*    fClusterEnergy;
+    TH2F*    fNComboHitsVsP;
   
   };
 
@@ -133,6 +143,8 @@ public:
     TH1F*    fT0Err;
     TH1F*    fD0;
     TH1F*    fAlg;
+    TH2F*    fLambdaVsP;                // bvitali proton_reco
+    TH2F*    fNRotVsP;            // bvitali proton_reco
   };
 
   struct TrackHist_t {
@@ -227,9 +239,22 @@ public:
 
     TH1F*    fFrE1;
     TH1F*    fFrE2;
- 
+    /*
+    TH1F*    fDeuPreco;                 // bastiano deuton eff     
+    TH2F*    fDeuPrecoVsP;              // bastiano deuton eff
+    */
     TH1F*    fPrecopr;                  // bastiano proton eff	          
     TH2F*    fPrecoVsP;                 // bastiano proton eff
+    TH2F*    fChi2dVsP;                 // bastiano proton eff
+    TH2F*    fPrecoVsTanTh;             // bastiano proton eff
+    TH2F*    fPrecoVsSHE;               // bastiano proton eff
+    TH2F*    fTanThVsSHE;               // bastiano proton eff
+    TH2F*    fPrecoVsNSH;               // bastiano proton eff
+    TH2F*    fFracSHVsPreco;            // bastiano proton eff
+    TH2F*    fLastTrkZVsPreco;          // bastiano proton eff
+    TH2F*    fFirstTrkZVsPreco;         // bastiano proton eff
+    TH2F*    fUnusedSHVsPreco;          // bastiano proton eff
+    TH2F*    fUsedSHVsPreco;            // bastiano proton eff
   };
 
   struct GenpHist_t {
@@ -242,6 +267,10 @@ public:
     TH1F*    fCosTh;			// 
     
     TH1F*    fPpr;                      //bastiano proton eff
+    TH1F*    fPprCheck;                 //bastiano proton eff
+    TH1F*    fPdeu;                     //bastiano proton eff
+    TH1F*    fPdeuCheck;                //bastiano proton eff
+
   };
 					// histograms for the simulated CE
   struct SimpHist_t {
@@ -305,6 +334,7 @@ public:
   TStrawDataBlock*       fStrawDataBlock;
   TGenpBlock*            fGenpBlock;
   TSimpBlock*            fSimpBlock;
+  TTrackStrawHitBlock*   fTrackSHBlock;
 					// additional track parameters (assume ntracks < 20)
   TrackPar_t        fTrackPar[20];
 					// histograms filled

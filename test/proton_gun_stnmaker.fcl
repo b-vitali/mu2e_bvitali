@@ -9,22 +9,24 @@ BEGIN_PROLOG
   bgHitFiles   : @nil
   INPUT_MODULE : EmptyEvent
   TRIGGER_PATH : p1
-  PROCESS_NAME : EMinusGunStnmaker
+  PROCESS_NAME : PPlusGunStnmaker ##EMinusGunStnmaker
 END_PROLOG
 
 #include "Stntuple/test/stnmaker.fcl"
 source : {module_type : EmptyEvent}
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST (.art) file to be written out
-#-----------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+#Try to redifine detectorFilter as in JobConfig/beam/prolog.fcl
 physics.out                               : [ detectorOutput ]
 outputs.detectorOutput.SelectEvents       : [ @local::TRIGGER_PATH ]
+outputs.detectorOutput.outputCommands     : ["keep *_*_*_*"]                    ##KEEP EVERYTHING 
 #------------------------------------------------------------------------------
-# output file names 
+# output file names ##/mu2e/data/personal/bvitali/nts._USER_.proton_gun_stnmaker.xxx.000003.root
 #------------------------------------------------------------------------------
-services.TFileService.fileName            : "nts._USER_.proton_gun_stnmaker.xxx.000001.root"
-physics.filters.InitStntuple.histFileName : "nts._USER_.proton_gun_stnmaker.xxx.000001.stn"
-outputs.detectorOutput.fileName           : "sim._USER_.proton_gun_stnmaker.xxx.000001.art"
+services.TFileService.fileName            : "/mu2e/data/personal/bvitali/nts._USER_.proton_gun_stnmaker.xxx.000003.root" 
+physics.filters.InitStntuple.histFileName : "/mu2e/data/personal/bvitali/nts._USER_.proton_gun_stnmaker.xxx.000003.stn"
+outputs.detectorOutput.fileName           : "/mu2e/data/personal/bvitali/sim._USER_.proton_gun_stnmaker.xxx.000003.art"
 #------------------------------------------------------------------------------
 # uncomment to avoid waisting time on the initialization of detailed neutron 
 # cross sections - that shouldn't affect the electron simulation 
@@ -41,3 +43,4 @@ physics.producers.TrkQualDmuMHDar.TrkQualMVA : { @table::TrkQualNeg.TrkQualMVA }
 #------------------------------------------------------------------------------
 # everything below is appended by murat/scripts/submit_mu2e_job
 #------------------------------------------------------------------------------
+

@@ -1,0 +1,16 @@
+# -*- mode: tcl -*-
+BEGIN_PROLOG
+    TrackerMCCheck                   : { module_type:TrackerMCCheck # the class name
+	g4ModuleLabel                : g4run
+	strawHitMakerModuleLabel     : makeSH
+#	strawHitPosMakerModuleLabel  : MakeStereoHits
+	flagBgrHitsModuleLabel       : "FlagBkgHits:StrawHits"
+	
+	pdgCode                      : 11
+	generatorCode                : 28
+	
+	debugBits                    : { 
+	    # bit3:1 # bit4:1 # bit5:1 
+	}
+    }
+END_PROLOG

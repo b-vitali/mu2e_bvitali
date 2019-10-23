@@ -62,8 +62,8 @@ TValidationModule2::TValidationModule2(const char* name, const char* title):
 //-----------------------------------------------------------------------------
 // MC truth: define which MC particle to consider as signal
 //-----------------------------------------------------------------------------
-  fPdgCode       = 11;
-  fGeneratorCode = 2;			// conversionGun, 28:StoppedParticleReactionGun
+  fPdgCode       = 2212;
+  fGeneratorCode = 28;			// conversionGun, 28:StoppedParticleReactionGun
   fTrackBlockName = "TrackBlock";
 }
 
@@ -79,6 +79,9 @@ void TValidationModule2::BookTimeClusterHistograms   (TimeClusterHist_t*   Hist,
     HBook1F(Hist->fNComboHits    ,"ncombohits" ,Form("%s: # of combo hits"              ,Folder), 150,   0,   150,Folder);
     HBook1F(Hist->fT0            ,"t0"         ,Form("%s: TimeCluster; t_{0}[ns]"       ,Folder), 800, 400,  1700,Folder);
     HBook1F(Hist->fClusterEnergy ,"clusterE"   ,Form("%s: cluster energy; E [MeV]      ",Folder), 400,   0,  200,Folder);  
+
+    HBook2F(Hist->fNComboHitsVsP ,"lambda_vs_p" ,Form("%s:# of combo hits vs true momentum",Folder), 2000, 0,500, 200, 0, 200, Folder);              //
+
 }
 //-----------------------------------------------------------------------------
 void TValidationModule2::BookHelixHistograms   (HelixHist_t*   Hist, const char* Folder){
@@ -87,14 +90,16 @@ void TValidationModule2::BookHelixHistograms   (HelixHist_t*   Hist, const char*
     HBook1F(Hist->fClusterTime   ,"clusterTime",Form("%s: cluster time; t_{cluster}[ns]",Folder), 800, 400,  1700,Folder);
     HBook1F(Hist->fClusterEnergy ,"clusterE"   ,Form("%s: cluster energy; E [MeV]      ",Folder), 400,   0,  200,Folder);
     HBook1F(Hist->fRadius        ,"radius"     ,Form("%s: curvature radius; r [mm]"     ,Folder), 500,   0,   500,Folder);
-    HBook1F(Hist->fMom           ,"p"          ,Form("%s: momentum; p [MeV/c]"          ,Folder), 300,   50,   200,Folder);
+    HBook1F(Hist->fMom           ,"p"          ,Form("%s: momentum; p [MeV/c]"          ,Folder), 2000,   0,   500,Folder);
     HBook1F(Hist->fPt            ,"pT"         ,Form("%s: pT; pT [MeV/c]"               ,Folder), 600,   0,   150,Folder);
-    HBook1F(Hist->fLambda        ,"lambda"     ,Form("%s: lambda; #lambda"              ,Folder), 400, 1000,   5000,Folder);
+    HBook1F(Hist->fLambda        ,"lambda"     ,Form("%s: lambda; -#lambda"             ,Folder), 2500,   0,   2500,Folder);
     HBook1F(Hist->fT0            ,"t0"         ,Form("%s: t0; t0[ns]"                   ,Folder), 100,   0,    10,Folder);
     HBook1F(Hist->fT0Err         ,"t0err"      ,Form("%s: t0err; t0err [ns]"            ,Folder), 100,   0,    10,Folder);
     HBook1F(Hist->fD0            ,"d0"         ,Form("%s: D0; d0 [mm]"                  ,Folder), 1600,   -400,    400,Folder);
+    
+    HBook2F(Hist->fLambdaVsP ,"lambda_vs_p" ,Form("%s:Lambda vs true momentum",Folder), 2000, 0,500, 2500, 0, 2500, Folder);              //
+    HBook2F(Hist->fNRotVsP ,"nrot_vs_p" ,Form("%s:Number of Rotation vs true momentum",Folder), 2000, 0,500, 1000, 0, 5, Folder);         //
 
-  
 }
 
 //-----------------------------------------------------------------------------
@@ -155,7 +160,11 @@ void TValidationModule2::BookGenpHistograms(GenpHist_t* Hist, const char* Folder
   HBook1F(Hist->fR0     ,"r"       ,Form("%s: R0"           ,Folder), 100,     0,  100,Folder);
   HBook1F(Hist->fCosTh  ,"cos_th"  ,Form("%s: Cos(Theta)"   ,Folder), 200,   -1.,   1.,Folder);
 
-  HBook1F(Hist->fPpr      ,"ppr"        ,Form("%s:True momentum of protons",Folder), 2000,  0, 400,Folder); //
+  HBook1F(Hist->fPpr      ,"ppr"        ,Form("%s:True momentum of protons",Folder), 2000,  0, 500,Folder);                      //
+  HBook1F(Hist->fPprCheck ,"pprcheck"   ,Form("%s:True momentum CHECK of protons",Folder), 2000,  0, 50000,Folder);              //
+  HBook1F(Hist->fPdeu     ,"pdeu"       ,Form("%s:True momentum of deuteria",Folder), 2000,  0, 500,Folder);                     //
+  HBook1F(Hist->fPdeuCheck,"pdeucheck"  ,Form("%s:True momentum CHECK of deuteria",Folder), 2000,  0, 50000,Folder);             //
+
 }
 
 //-----------------------------------------------------------------------------
@@ -254,9 +263,25 @@ void TValidationModule2::BookTrackHistograms(TrackHist_t* Hist, const char* Fold
 
   HBook1F(Hist->fFrE1   ,"fre1"   ,Form("%s: E1/Etot"       ,Folder),200, 0,  1,Folder);
   HBook1F(Hist->fFrE2   ,"fre2"   ,Form("%s: (E1+E2)/Etot"  ,Folder),200, 0,  1,Folder);
-  
-  HBook1F(Hist->fPrecopr  ,"precopr"    ,Form("%s:True momentum of reco_protons",Folder), 2000,  0, 400,Folder); //
-  HBook2F(Hist->fPrecoVsP ,"preco_vs_p" ,Form("%s:Reco_mom vs true",Folder), 2000, 0,400, 2000, 0,400, Folder); //
+  /*
+  HBook1F(Hist->fDeuPreco  ,"deupreco"    ,Form("%s:True momentum of reco_deutons",Folder), 2000,  0, 500,Folder);                        //Deuton
+  HBook2F(Hist->fDeuPrecoVsP ,"deupreco_vs_p" ,Form("%s:Reco_mom vs true for deutons",Folder), 2000, 0,500, 2000, 0,500, Folder);         //Deuton
+  */
+  HBook1F(Hist->fPrecopr  ,"precopr"    ,Form("%s:True momentum of reco_protons",Folder), 2000,  0, 500,Folder);                          //
+  HBook2F(Hist->fPrecoVsP ,"preco_vs_p" ,Form("%s:Reco_mom vs true",Folder), 2000, 0,500, 2000, 0,500, Folder);                           //
+  HBook2F(Hist->fChi2dVsP ,"chi2d_vs_p" ,Form("%s:Chi2/dof vs true momentum",Folder), 2000, 0,500, 200, 0,50, Folder);                    //
+
+  HBook2F(Hist->fPrecoVsTanTh ,"preco_vs_tanth" ,Form("%s:True P vs TanTh",Folder), 2000, 0,500, 2000, 0 ,10, Folder);                    //
+  HBook2F(Hist->fPrecoVsSHE ,"preco_vs_shE" ,Form("%s:True P vs SHE",Folder), 2000, 0,500, 200, 0, 0.015, Folder);                        //
+  HBook2F(Hist->fTanThVsSHE ,"tanth_vs_shE" ,Form("%s:TanTh vs SHE",Folder), 2000, 0, 10, 200, 0, 0.015, Folder);                         //
+  HBook2F(Hist->fPrecoVsNSH ,"preco_vs_nsh" ,Form("%s:true P vs number of SH",Folder), 2000, 0,500, 200, 0, 150, Folder);                 //
+  HBook2F(Hist->fFracSHVsPreco ,"fracsh_vs_preco" ,Form("%s:Fraction of SH vs true P",Folder), 2000, 0,500, 200, 0, 1.1, Folder);         //
+
+  HBook2F(Hist->fLastTrkZVsPreco ,"lasttrkz_vs_preco" ,Form("%s:LastTrkZ vs true momentum",Folder), 2000, 0,500, 34, -2, 32, Folder);     //
+  HBook2F(Hist->fFirstTrkZVsPreco ,"firsttrkz_vs_preco" ,Form("%s:FirstTrkZ vs true momentum",Folder), 2000, 0,500, 34, -2, 32, Folder);  //
+
+  HBook2F(Hist->fUnusedSHVsPreco ,"unusedsh_vs_preco" ,Form("%s:Unused SH vs true P",Folder), 2000, 0,500, 2000, 0,100000, Folder);       //
+  HBook2F(Hist->fUsedSHVsPreco ,"usedsh_vs_preco" ,Form("%s:Used SH vs true P",Folder), 2000, 0,500, 2000, 0,100000, Folder);             //
 
 }
 
@@ -284,7 +309,14 @@ void TValidationModule2::BookEventHistograms(EventHist_t* Hist, const char* Fold
   HBook1F(Hist->fBestHyp[0],"bfh0"     ,Form("%s: Best Fit Hyp[0](e-,e+,mu-,mu+)"  ,Folder),5,0,5,Folder);
   HBook1F(Hist->fBestHyp[1],"bfh1"     ,Form("%s: Best Fit Hyp[1](e-,e+,mu-,mu+)"  ,Folder),5,0,5,Folder);
   HBook1F(Hist->fNGenp     ,"ngenp"    ,Form("%s: N(Gen Particles)"                ,Folder),500,0,500,Folder);
-  HBook1F(Hist->fQSH       ,"qsh"      ,Form("%s: Charge for each SH"              ,Folder),500,0,500,Folder); // SH charge
+
+  HBook1F(Hist->fQSH       ,"qsh"      ,Form("%s: Charge for each SH"              ,Folder),500,0,0.014,Folder);                          // 
+  HBook2F(Hist->fNSHVsPreco ,"nsh_vs_preco" ,Form("%s:Number of SH  vs true(?) momentum",Folder), 2000, 0,500, 200,0,200, Folder);        //
+  HBook2F(Hist->fLumVsNTrk ,"istlum_vs_ntrk" ,Form("%s:Istant Luminosity vs N of Tracks",Folder), 20, 0,20, 2000, 1e6,100*1e6, Folder);   //
+  HBook2F(Hist->fLastZVsPreco ,"lastz_vs_preco" ,Form("%s:LastZ vs true(?) momentum",Folder), 2000, 0,500, 34, -2, 32, Folder);           //
+  HBook2F(Hist->fFirstZVsPreco ,"firstz_vs_preco" ,Form("%s:FirstZ vs true(?) momentum",Folder), 2000, 0,500, 34, -2, 32, Folder);        //
+
+
 }
 
 //-----------------------------------------------------------------------------
@@ -292,10 +324,11 @@ void TValidationModule2::BookSimpHistograms(SimpHist_t* Hist, const char* Folder
   //  char name [200];
   //  char title[200];
 
-  HBook1F(Hist->fPdgCode   ,"pdg"         ,Form("%s: PDG code"                     ,Folder),200,-100,100,Folder);
+  HBook1F(Hist->fPdgCode   ,"pdg"         ,Form("%s: PDG code"                     ,Folder),200,-10000,10000,Folder);
   HBook1F(Hist->fNStrawHits,"nsth"        ,Form("%s: n straw hits"                 ,Folder),200,   0,200,Folder);
-  HBook1F(Hist->fMomTargetEnd    ,"ptarg" ,Form("%s: CE mom after Stopping Target" ,Folder),400,  90,110,Folder);
-  HBook1F(Hist->fMomTrackerFront ,"pfront",Form("%s: CE mom at the Tracker Front"  ,Folder),400,  90,110,Folder);
+  HBook1F(Hist->fMomTargetEnd    ,"ptarg" ,Form("%s: Mom after Stopping Target" ,Folder),2000,  0,500,Folder);
+  HBook1F(Hist->fMomTrackerFront ,"pfront",Form("%s: Mom at the Tracker Front"  ,Folder),2000,  0,500,Folder);
+
 }
 //_____________________________________________________________________________
 void TValidationModule2::BookHistograms() {
@@ -344,12 +377,9 @@ void TValidationModule2::BookHistograms() {
   for (int i=0; i<kNTrackSeedHistSets; ++i)  book_trackSeed_histset[i] = 0;
 
   book_trackSeed_histset[0] = 1;   // events with at least one trackSeed
-  book_trackSeed_histset[1] = 1;   // events with at least one trackSeed with p > 80 MeV/c
-  book_trackSeed_histset[2] = 1;   // events with at least one trackSeed with p > 90 MeV/c
-  book_trackSeed_histset[3] = 1;   // events with at least one trackSeed with p > 100 MeV/c
-  book_trackSeed_histset[4] = 1;   // events with at least one trackSeed with 10 < nhits < 15
-  book_trackSeed_histset[5] = 1;   // events with at least one trackSeed with nhits >= 15
-  book_trackSeed_histset[6] = 1;   // events with at least one trackSeed with nhits >= 15 and chi2(ZPhi)<4
+  book_trackSeed_histset[1] = 1;   // events with at least one trackSeed with p > 150 MeV/c
+  book_trackSeed_histset[2] = 1;   // events with at least one trackSeed with nhits >= 10
+  book_trackSeed_histset[3] = 1;   // events with at least one trackSeed with nhits >= 10 and chi2<5
 
    for (int i=0; i<kNTrackSeedHistSets; i++) {
     if (book_trackSeed_histset[i] != 0) {
@@ -368,12 +398,10 @@ void TValidationModule2::BookHistograms() {
   for (int i=0; i<kNHelixHistSets; ++i)  book_helix_histset[i] = 0;
 
   book_helix_histset[0] = 1;   // events with at least one helix
-  book_helix_histset[1] = 1;   // events with at least one helix with p > 80 MeV/c
-  book_helix_histset[2] = 1;   // events with at least one helix with p > 90 MeV/c
-  book_helix_histset[3] = 1;   // events with at least one helix with p > 100 MeV/c
-  book_helix_histset[4] = 1;   // events with at least one helix with 10 < nhits < 15
-  book_helix_histset[5] = 1;   // events with at least one helix with nhits >= 15
-  book_helix_histset[6] = 1;   // events with at least one helix with nhits >= 15 and chi2(ZPhi)<4
+  book_helix_histset[1] = 1;   // events with at least one helix with p > 250 MeV/c
+  book_helix_histset[2] = 1;   // events with at least one helix with p < 250 MeV/c
+  book_helix_histset[3] = 1;   // events with at least one helix with nhits >= 10
+  book_helix_histset[4] = 1;   // events with at least one helix with nhits >= 10 and chi2<5
 
    for (int i=0; i<kNHelixHistSets; i++) {
     if (book_helix_histset[i] != 0) {
@@ -423,6 +451,13 @@ void TValidationModule2::BookHistograms() {
   book_event_histset[27] = 1;	        // 
   book_event_histset[28] = 1;	        // 
 
+  book_event_histset[30] = 1;	        // 
+  book_event_histset[31] = 1;	        // 
+  book_event_histset[32] = 1;	        // 
+  book_event_histset[40] = 1;	        // 
+
+
+
   for (int i=0; i<kNEventHistSets; i++) {
     if (book_event_histset[i] != 0) {
       sprintf(folder_name,"evt_%i",i);
@@ -439,7 +474,7 @@ void TValidationModule2::BookHistograms() {
   for (int i=0; i<kNSimpHistSets; i++) book_simp_histset[i] = 0;
 
   book_simp_histset[ 0] = 1;		// all events
-
+  
   for (int i=0; i<kNSimpHistSets; i++) {
     if (book_simp_histset[i] != 0) {
       sprintf(folder_name,"sim_%i",i);
@@ -455,16 +490,16 @@ void TValidationModule2::BookHistograms() {
   int book_track_histset[kNTrackHistSets];
   for (int i=0; i<kNTrackHistSets; i++) book_track_histset[i] = 0;
 
-  book_track_histset[  0] = 1;		// all tracks e-
-  book_track_histset[  1] = 1;		// all tracks e- passing Set C cuts 
-  book_track_histset[  2] = 1;		// all tracks e- passing Set C cuts, events with clusters 
-  book_track_histset[  3] = 1;		// all tracks e- passing Set C cuts, events w/o  clusters
-  book_track_histset[  4] = 1;		// all tracks e- passing Set C cuts, events with clusters, no closest
-  book_track_histset[  5] = 1;		// all tracks e- passing Set C cuts, |dt| < 2.5ns
-  book_track_histset[  6] = 1;		// all tracks e-  E/P > 0.4
-  book_track_histset[  7] = 1;		// all tracks e- passing Set C cuts, E/P > 0.4
-  book_track_histset[  8] = 1;		// Set C tracks e- , |xslope| < 3.
-  book_track_histset[  9] = 1;		// all  tracks in the event when there is no EM clusters E > 60 MeV
+  book_track_histset[  0] = 1;		// all tracks
+  book_track_histset[  1] = 1;		// all tracks passing Set C cuts 
+  book_track_histset[  2] = 1;		// all tracks passing Set C cuts, events with clusters 
+  book_track_histset[  3] = 1;		// all tracks passing Set C cuts, events w/o  clusters
+  book_track_histset[  4] = 1;		// all tracks passing Set C cuts, events with clusters, no closest
+  book_track_histset[  5] = 1;		// all tracks passing Set C cuts, |dt| < 2.5ns
+  book_track_histset[  6] = 1;		// all tracks E/P > 0.4
+  book_track_histset[  7] = 1;		// all tracks passing Set C cuts, E/P > 0.4
+  book_track_histset[  8] = 1;		// Set C tracks, |xslope| < 3.
+  book_track_histset[  9] = 1;		// all tracks in the event when there is no EM clusters E > 60 MeV
   book_track_histset[ 10] = 1;		// Set C tracks in the event when there is no EM clusters E > 60 MeV
   book_track_histset[ 11] = 1;		// all tracks with P > 103.5
   book_track_histset[ 12] = 1;		// tracks with fcons < 1.e-4
@@ -504,8 +539,10 @@ void TValidationModule2::BookHistograms() {
   book_track_histset[ 62] = 1;		// Set "C" tracks, alg_mask = 3, T > 700
 
   //
-  book_track_histset[ 63] = 1;          // tracks with P>350                            <---------------
-  book_track_histset[ 64] = 1;          // tracks with 255<P<265                        <---------------
+  book_track_histset[ 63] = 1;          // all tracks with P>270                        <---------------
+  book_track_histset[ 64] = 1;          // all tracks with P<270                        <---------------
+  book_track_histset[ 71] = 1;          // all track Protons                            <---------------
+  book_track_histset[ 72] = 1;          // all track Deuterons                          <---------------
   //
 
   for (int i=0; i<kNTrackHistSets; i++) {
@@ -550,6 +587,7 @@ void TValidationModule2::BookHistograms() {
   book_genp_histset[0] = 1;		// all particles
   book_genp_histset[1] = 1;		// events with tracks
   book_genp_histset[2] = 1;		// events with good tracks
+  book_genp_histset[3] = 1;		// At least a SH
 
   for (int i=0; i<kNGenpHistSets; i++) {
     if (book_genp_histset[i] != 0) {
@@ -595,6 +633,13 @@ void TValidationModule2::FillEventHistograms(EventHist_t* Hist) {
   Hist->fNStrawHits[0]->Fill(fNStrawHits);
   Hist->fNStrawHits[1]->Fill(fNStrawHits);
 
+  Hist->fNSHVsPreco->Fill(p,fNStrawHits);
+
+
+  int ntrkchi2=0;
+  for(int i=0;i<fTrackBlock->NTracks();i++) if(fTrackBlock->Track(i)->Chi2Dof()<6) ntrkchi2=ntrkchi2+1; //---------------------------------
+  Hist->fLumVsNTrk->Fill(ntrkchi2,GetHeaderBlock()->InstLum()); // ------------------------------------------------------------fNTracks[0]
+
   double emax   = -1;
   double t0_cls = -1;
   double dt     = 9999.;
@@ -622,17 +667,23 @@ void TValidationModule2::FillEventHistograms(EventHist_t* Hist) {
   Hist->fDtClT->Fill(dt);
   Hist->fEMax->Fill(emax);
 
+  //  SH Energy and max&min Station
   TStrawHitData*  sh;
   int n_good_hits = 0;
+  int minStation = 30;
+  int maxStation = -2;
   for (int i=0; i<fNStrawHits; i++ ) {
     sh = fStrawDataBlock->Hit(i);
     dt = t0_cls-sh->Time() + 15;
     Hist->fDtClS->Fill(dt);
     Hist->fSHTime->Fill(sh->Time());
     Hist->fQSH->Fill(sh->Energy()); // SH chargesh->Energy()
-
+    if(sh->Station()>maxStation) maxStation=sh->Station();
+    if(sh->Station()<minStation) minStation=sh->Station();
     if (fabs(dt+15.)< 50) n_good_hits += 1;
   }
+  Hist->fLastZVsPreco->Fill(p,maxStation);
+  Hist->fFirstZVsPreco->Fill(p,minStation);
   Hist->fNGoodSH->Fill(n_good_hits);
 
   Hist->fNHyp->Fill(fNHyp);
@@ -690,6 +741,13 @@ void TValidationModule2::FillTimeClusterHistograms(TimeClusterHist_t*   Hist, TS
   Hist->fT0            ->Fill(time);
   Hist->fClusterEnergy ->Fill(clusterE);
 
+  if(GetHeaderBlock()->InstLum() == -1 && fSimpBlock){
+    TSimParticle* simp = fSimpBlock->FindParticle(0);
+    double p  = simp->StartMom()->P();
+    Hist->fNComboHitsVsP ->Fill(p,ncombohits);
+  }
+  
+
 }
 
 //--------------------------------------------------------------------------------
@@ -709,6 +767,7 @@ void TValidationModule2::FillHelixHistograms(HelixHist_t*   Hist, TStnHelix*    
   double      pT       = radius*mm2MeV;
   double      p        = pT/std::cos( std::atan(tanDip));
   
+  double      nRot     = 3270/(abs(lambda)*TMath::TwoPi()); //
 
   Hist->fNHits         ->Fill(nhits);	 
   Hist->fClusterTime   ->Fill(clusterT);
@@ -717,11 +776,17 @@ void TValidationModule2::FillHelixHistograms(HelixHist_t*   Hist, TStnHelix*    
   Hist->fRadius        ->Fill(radius);    
   Hist->fMom           ->Fill(p);	 
   Hist->fPt            ->Fill(pT);	 
-  Hist->fLambda        ->Fill(lambda);    
-  		       
-  Hist->fAlg           ->Fill(Helix->AlgorithmID());
+  Hist->fLambda        ->Fill(-lambda); // -lambda because lambda is negative for protons    
+  //  Hist->fAlg           ->Fill(Helix->AlgorithmID()); // does this exist?
   Hist->fD0            ->Fill(Helix->D0());
 
+  if(fSimpBlock){
+    TSimParticle* simp = fSimpBlock->FindParticle(0);
+    p  = simp->StartMom()->P();
+  }
+
+  Hist->fLambdaVsP     ->Fill(p,-lambda);
+  Hist->fNRotVsP       ->Fill(p,nRot);
 }
 
 //-----------------------------------------------------------------------------
@@ -793,9 +858,15 @@ void TValidationModule2::FillGenpHistograms(GenpHist_t* Hist, TGenParticle* Genp
   Hist->fP->Fill(p);
   Hist->fCosTh->Fill(cos_th);
  
-  
-  if(Genp->GetPdgCode() == 2212 || Genp->GetPdgCode() == 1000010020) // is proton or deutons
-      Hist->fPpr->Fill(p);
+  if(Genp->GetPdgCode() == 2212){ //If it is proton
+    if (Genp->GetStatusCode()==28) Hist->fPpr->Fill(p);
+    Hist->fPprCheck->Fill(p); 
+  }
+
+  if(Genp->GetPdgCode() == 1000010020){ //If it is deuton
+    if (Genp->GetStatusCode()==28) Hist->fPdeu->Fill(p);    
+    Hist->fPdeuCheck->Fill(p); 
+  }
   
 }
 
@@ -1013,15 +1084,127 @@ void TValidationModule2::FillTrackHistograms(TrackHist_t* Hist, TStnTrack* Track
   Hist->fFrE1->Fill(fre1);
   Hist->fFrE2->Fill(fre2);
    
-  
-  if (Track->fPdgCode == 2212 || Track->fPdgCode == 1000010020) { // is proton or deutons
+//<-------------------------------------------------------------------------------------------------------------------------||
+//<---------------------------$$$-Checking the proton reconstruction-$$$----------------------------------------------------||
+//<--------------------------------------------------------------------------------------------------------bvitali-Oct-2019-||
+/*
+This are the hist that bvitali used to improve and check the efficency of proton reconstruction
+First part is for every type of event, then it's split between SingleParticle and NoPrimary.
+You enter both if it is 
+*/  
+/*
+  if (Track->fPdgCode == 1000010020) {  
+    //import the MC particle associated to the track
     TSimParticle* simp = fSimpBlock->FindParticle(Track->fPartID);
     float p_genp  = simp->StartMom()->P();
-    Hist->fPrecoVsP->Fill(p_genp,Track->fP); 
-    Hist->fPrecopr->Fill(p_genp);
+    
+    //True momentum of the reconstructed particle
+    Hist->fDeuPreco->Fill(p_genp);
+
+    //True momentum VS reconstructed momentum
+    Hist->fDeuPrecoVsP->Fill(p_genp,Track->fP);    
   }
+*/  
+
   
- 
+  //Check if the particle is a proton
+  if (Track->fPdgCode == 2212|| Track->fPdgCode == 1000010020) {       // WHAT ABOUT DEUTONS    || Track->fPdgCode == 1000010020
+
+    //import the MC particle associated to the track
+    TSimParticle* simp = fSimpBlock->FindParticle(Track->fPartID);
+    float p_genp  = simp->StartMom()->P();
+    
+    //True momentum of the reconstructed particle
+    Hist->fPrecopr->Fill(p_genp);
+
+    //True momentum VS reconstructed momentum
+    Hist->fPrecoVsP->Fill(p_genp,Track->fP);    
+
+    //Chi2/dof vs momentum. Is the dip at 250 linked to chi2?
+    Hist->fChi2dVsP->Fill(p_genp,Track->fChi2/(Track->NActive()-5.));
+
+    TStrawHitData*  sh = NULL;
+    TTrackStrawHitData*  tsh = NULL;
+    double tan = simp->StartMom()->Pz()/simp->StartMom()->P(); ////////////////COSENO 
+    
+    //How are p and the angle linked?
+    Hist->fPrecoVsTanTh->Fill(p_genp,tan); 
+
+
+    //SINGLE PROTON EVENT
+    if(GetHeaderBlock()->InstLum() == -1 && fNStrawHits > 0){
+      
+      //Number of hits and fraction of 'active hits' Vs True momentum (with SHBlock and not TrackStrawHitBlock)  
+      double fractionActive = (double)Track->NActive()/(double)fNStrawHits;
+      Hist->fPrecoVsNSH->Fill(p_genp,fNStrawHits);   
+      Hist->fFracSHVsPreco->Fill(p_genp,fractionActive);  
+
+      int nTrackHits = -1; 
+      bool used = false;
+      int nonActive = 0;
+      
+      //variables to check initial and final point of the track
+      int minTrkStation = 30;
+      int maxTrkStation = -2;
+      
+      //loop on all the SH in the SHBlock (we are in a 'Single proton event')
+      for (int k=0; k<fNStrawHits; k++ ) {
+	sh = fStrawDataBlock->Hit(k);
+	Hist->fPrecoVsSHE->Fill(p_genp,sh->Energy());
+	Hist->fTanThVsSHE->Fill(tan,sh->Energy()); 
+	
+	used = false;
+	nonActive=0;
+
+	// If there is something in TrackSHBlock
+	if(fTrackSHBlock->NTracks()!=0){
+	  //there should be just 1 track, the number 0
+	  nTrackHits = fTrackSHBlock->NTrackHits(0);
+	  //if(nTrackHits != Track->NHits() && k == 0) printf("SHBlock %i : Track %i \n",nTrackHits, Track->NHits());
+	  if(nTrackHits>fNStrawHits ||Track->NHits()> fNStrawHits) printf("Something is wrong\n");
+
+	  //loop over the TrackSH: check if the sh is used and take the max Station of the sh
+	  //is done like this because there is no 'Station()' in TrackSH
+	  for(int i = 0; i <  nTrackHits; i++){
+	    nonActive = 0;
+	    tsh = fTrackSHBlock->Hit(0,i);
+	    //printf("TrackStrawHitData Index = %i \n", tsh->Index());
+	    if(tsh->Active()!=1) nonActive = nonActive+1;
+	    if(tsh->Index()==sh->Index()) {
+	      used=true;
+	      Hist->fUsedSHVsPreco->Fill(p_genp,tsh->Index());
+	      
+	      if(sh->Station()>maxTrkStation) maxTrkStation=sh->Station();
+	      if(sh->Station()<minTrkStation) minTrkStation=sh->Station();
+	    }
+	  }
+	  if(!used) Hist->fUnusedSHVsPreco->Fill(p_genp,sh->Index()); 
+	}
+	else printf("No TrackSHBlock \n");
+      }
+      Hist->fLastTrkZVsPreco->Fill(p_genp,maxTrkStation);
+      Hist->fFirstTrkZVsPreco->Fill(p_genp,minTrkStation);
+    }
+   
+    //NON SIGNLE PARTICLE EVENTS
+    else if(GetHeaderBlock()->InstLum() !=-1 && fTrackSHBlock->NTracks()!=0 ){
+      //Number of hits and fraction of 'active hits' Vs True momentum  
+      double fractionActive = (double)Track->NActive()/(double)Track->NHits();
+      Hist->fPrecoVsNSH->Fill(p_genp,Track->NHits());   
+      Hist->fFracSHVsPreco->Fill(p_genp,fractionActive);  
+      
+      int which_track = Track->Number();
+      for(int k=0;k<fTrackSHBlock->NTrackHits(which_track);k++){
+	tsh = fTrackSHBlock->Hit(which_track,k);
+	Hist->fPrecoVsSHE->Fill(p_genp,tsh->Energy());
+	Hist->fTanThVsSHE->Fill(tan,tsh->Energy()); 
+      }
+    }
+  }
+  else {printf("non proton or deuton track, look in pdio, at 120 \n"); Hist->fPDio->Fill(120);} //Random just to see if there are non proton/deuton tracks
+//<--------------------------------------------------------------------------------------------------------bvitali-Oct-2019-||
+//<-------------------------------------------------------------------------------------------------------------------------||  
+//<-------------------------------------------------------------------------------------------------------------------------||  
 } 
 
 //-----------------------------------------------------------------------------
@@ -1031,8 +1214,8 @@ int TValidationModule2::BeginJob() {
 //-----------------------------------------------------------------------------
 // register data blocks
 //-----------------------------------------------------------------------------
-  RegisterDataBlock("CprTimeClusterBlock" ,"TStnTimeClusterBlock",&fTimeClusterBlock);
-  RegisterDataBlock("CalTrackSeedBlock","TStnTrackSeedBlock",&fTrackSeedBlock);
+  RegisterDataBlock("TimeClusterBlockDpP" ,"TStnTimeClusterBlock",&fTimeClusterBlock);
+  RegisterDataBlock("TrackSeedBlockTpr","TStnTrackSeedBlock",&fTrackSeedBlock);
   RegisterDataBlock("HelixBlock"    ,"TStnHelixBlock"    ,&fHelixBlock);
   RegisterDataBlock(fTrackBlockName.Data() ,"TStnTrackBlock"    ,&fTrackBlock  );
   RegisterDataBlock("ClusterBlock"  ,"TStnClusterBlock"  ,&fClusterBlock);
@@ -1040,6 +1223,8 @@ int TValidationModule2::BeginJob() {
   RegisterDataBlock("StrawDataBlock","TStrawDataBlock"   ,&fStrawDataBlock);
   RegisterDataBlock("GenpBlock"     ,"TGenpBlock"        ,&fGenpBlock);
   RegisterDataBlock("SimpBlock"     ,"TSimpBlock"        ,&fSimpBlock);
+  RegisterDataBlock("TrackHitBlock", "TTrackStrawHitBlock"   ,&fTrackSHBlock); //<<-----------TrackHitBlock-----------------------||||||||||||||
+
 //-----------------------------------------------------------------------------
 // book histograms
 //-----------------------------------------------------------------------------
@@ -1091,7 +1276,7 @@ void TValidationModule2::FillHistograms() {
   if (fNTracks[0]> 0) FillEventHistograms(fHist.fEvent[1]);
   else                FillEventHistograms(fHist.fEvent[2]);
 
-  if (fNClusters > 0) FillEventHistograms(fHist.fEvent[3]);
+ if (fNClusters > 0) FillEventHistograms(fHist.fEvent[3]);
   else                FillEventHistograms(fHist.fEvent[4]);
 
   if ((fNTracks[0] == 0) && (fabs(cos_th) < 0.4)) {
@@ -1116,6 +1301,14 @@ void TValidationModule2::FillHistograms() {
     }
   }
 
+  TLorentzVector    mom;
+  fParticle->Momentum(mom);
+  p      = mom.P();
+  if(p>245 && p<255) FillEventHistograms(fHist.fEvent[30]);                                            //////////////
+  if(p>225 && p<235) FillEventHistograms(fHist.fEvent[31]);                                            //////////////
+  if(p>345 && p<355) FillEventHistograms(fHist.fEvent[32]);                                            //////////////
+  if(fParticle->GetPdgCode() == 2212 || fParticle->GetPdgCode() == 1000010020) FillEventHistograms(fHist.fEvent[40]);       //////////////
+ 
   if (cl_e > 60.) {
     FillEventHistograms(fHist.fEvent[7]); 
     if (GetDebugBit(34)) {
@@ -1253,28 +1446,16 @@ void TValidationModule2::FillHistograms() {
     //    double     fitCons = trkSeed->Fitcons();
     
    
-    if (p > 80.) {
+    if (p > 150.) {
       FillTrackSeedHistograms(fHist.fTrackSeed[1], trkSeed);
     }
-    
-    if (p > 90) {
+
+    if ( nhits>=10) {
       FillTrackSeedHistograms(fHist.fTrackSeed[2], trkSeed);
     }
-
-    if (p > 100) {
+    
+    if ( (chi2 < 5) /*&& (chi2zphi < 4)*/ && (nhits>=10)){
       FillTrackSeedHistograms(fHist.fTrackSeed[3], trkSeed);
-    }
-    
-    if ( (nhits>10) && (nhits<15)) {
-      FillTrackSeedHistograms(fHist.fTrackSeed[4], trkSeed);
-    }
-
-    if ( nhits>=15) {
-      FillTrackSeedHistograms(fHist.fTrackSeed[5], trkSeed);
-    }
-    
-    if ( (chi2 < 4) /*&& (chi2zphi < 4)*/ && (nhits>=15)){
-      FillTrackSeedHistograms(fHist.fTrackSeed[6], trkSeed);
     }
   
   }
@@ -1302,28 +1483,20 @@ void TValidationModule2::FillHistograms() {
     double      chi2zphi = helix->Chi2ZPhi();
     
    
-    if (p > 80.) {
+    if (p >= 250.) {
       FillHelixHistograms(fHist.fHelix[1], helix);
     }
     
-    if (p > 90) {
+    if (p < 250) {
       FillHelixHistograms(fHist.fHelix[2], helix);
     }
-
-    if (p > 100) {
+    
+    if ( nhits>=10) {
       FillHelixHistograms(fHist.fHelix[3], helix);
     }
     
-    if ( (nhits>10) && (nhits<15)) {
+    if ( (chi2xy < 5) && (chi2zphi < 5) && (nhits>=10)){
       FillHelixHistograms(fHist.fHelix[4], helix);
-    }
-
-    if ( nhits>=15) {
-      FillHelixHistograms(fHist.fHelix[5], helix);
-    }
-    
-    if ( (chi2xy < 4) && (chi2zphi < 4) && (nhits>=15)){
-      FillHelixHistograms(fHist.fHelix[6], helix);
     }
   
   }
@@ -1555,16 +1728,28 @@ void TValidationModule2::FillHistograms() {
       }
     }
 //-----------------------------------------------------------------------------
-// TRK 63: tracks with P>=350                                                      <-----------------
-// TRK 64: tracks with 265>=P>=255                                                 <-----------------
+// TRK 63: tracks with P>=250                                                      <-----------------
+// TRK 64: tracks with 250>P                                                       <-----------------
 //-----------------------------------------------------------------------------
-    if (trk->fP >= 350) {
+    if (trk->fP >= 250) {
       FillTrackHistograms(fHist.fTrack[63],trk);
       GetAna()->GetHeaderBlock()->Print(Form("63: momentum: %12.5f",trk->fP));
     }
-    else if(trk->fP >= 255 && trk->fP <= 265){
+    else if(trk->fP < 250){
       FillTrackHistograms(fHist.fTrack[64],trk);
       GetAna()->GetHeaderBlock()->Print(Form("64: momentum: %12.5f",trk->fP));
+    }
+//-----------------------------------------------------------------------------
+// TRK 71: Just Protons                                                           <-----------------
+// TRK 72: Just Deuterons                                                         <-----------------
+//-----------------------------------------------------------------------------
+    if (trk->fPdgCode == 2212) {
+      FillTrackHistograms(fHist.fTrack[71],trk);
+      GetAna()->GetHeaderBlock()->Print(Form("71: momentum: %12.5f",trk->fP));
+    }
+    else if(trk->fPdgCode == 1000010020){
+      FillTrackHistograms(fHist.fTrack[72],trk);
+      GetAna()->GetHeaderBlock()->Print(Form("72: momentum: %12.5f",trk->fP));
     }
 
 //-----------------------------------------------------------------------------
@@ -1642,6 +1827,8 @@ void TValidationModule2::FillHistograms() {
 	FillGenpHistograms(fHist.fGenp[2],genp);
       }
     }
+    //if there is at least a SH
+    if(fNStrawHits>0 && GetHeaderBlock()->InstLum()==-1) FillGenpHistograms(fHist.fGenp[3],genp);
   }
 }
 
@@ -1662,7 +1849,9 @@ int TValidationModule2::Event(int ientry) {
   fTrackBlock  ->GetEntry(ientry);
   fHelixBlock  ->GetEntry(ientry);
   fClusterBlock->GetEntry(ientry);
-  //  fStrawDataBlock->GetEntry(ientry);
+  fStrawDataBlock->GetEntry(ientry);
+  fTrackSHBlock->GetEntry(ientry);
+  fTimeClusterBlock->GetEntry(ientry);
   fCalDataBlock->GetEntry(ientry);
   fGenpBlock->GetEntry(ientry);
   fSimpBlock->GetEntry(ientry);
@@ -1917,7 +2106,8 @@ void TValidationModule2::Debug() {
 
 //_____________________________________________________________________________
 int TValidationModule2::EndJob() {
-
+  int ntrk = fTrackBlock->NTracks();
+  printf("----- NTracks = %i\n",ntrk);
   printf("----- end job: ---- %s\n",GetName());
   return 0;
 }

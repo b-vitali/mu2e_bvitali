@@ -35,7 +35,7 @@ void efficiencies()
 //-----------------------------------------------------------------------------
   // TH1F * r_0   = gh1("eminus_gun_stnmaker.xxx.000003.val2_stn.hist","Validation2","gen_0/p");
   // TH1F * r_1   = gh1("eminus_gun_stnmaker.xxx.000003.val2_stn.hist","Validation2","gen_1/p");
-  TH1F * r_2   = gh1("eminus_gun_stnmaker.xxx.000003.val2_stn.hist","Validation2","gen_2/p");
+  TH1F * r_2   = gh1("/mu2e/app/users/bvitali/summer/eminus_gun_stnmaker.xxx.000003.val2_stn.hist","Validation2","gen_2/p");
   //TH1F * mc    = gh1("eminus_gun_stnmaker.xxx.000003.val2_stn.hist","Validation2","evt_0/mce");
   TH1F * mc = new TH1F("mc","particelle generate",1000,0,200);
   for(int i=300; i<550; i++){
@@ -62,7 +62,7 @@ void efficiencies()
   eff_2->SetTitle("Reconstruction efficiency for electrons");
   eff_2->GetXaxis()->SetTitle("E_{e} [MeV]");
   
-  int rbin = 1;
+  int rbin = 5;
   eff_2->Rebin(rbin);
   eff_2->Scale(1./rbin);
 

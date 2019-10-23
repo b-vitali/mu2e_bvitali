@@ -31,10 +31,10 @@ gen_seq : [ generate, g4run, detectorFilter,
 	    #
 	   ]
 
-TimeClusterFinderDp : { @table::TimeClusterFinder
+TimeClusterFinderDpP : { @table::TimeClusterFinder
             AveragePitch : 0.63 # signed
-	    MinNHits   : 5
-	    DtMax      : 70  #from Valerio Bertacchi's study #FIXME!
+	    MinNHits   : 5                  
+	    DtMax      : 70  #from Valerio Bertacchi's study #FIXME! 70
 	    HitBackgroundBits : []
 	    tmax       : 1800 ###bvitali in order to reconstruct proton with Time ~1690
 	    T0Calculator  : { @table::TimeCalculator
@@ -43,9 +43,9 @@ TimeClusterFinderDp : { @table::TimeClusterFinder
 	    }
  }
 
-RobustHelixFinderDp : {
+RobustHelixFinderDpP : {
     @table::RobustHelixFinder
-    TimeClusterCollection : "TimeClusterFinderDp"
+    TimeClusterCollection : "TimeClusterFinderDpP"
 }
 
 DigiCompression : {  @table::DigiCompression 
@@ -60,7 +60,7 @@ physics : {
 
 	generate : { @table::StoppedParticleReactionGun 
 	    physics : {
-		pdgId            : 2212
+		pdgId            : 2212 
 		elow             : 150.
 		ehi              : 151.
 		spectrumVariable : "momentum"
@@ -69,29 +69,38 @@ physics : {
 	}
 
 	makeSH            : { @table::TrkHitReco.producers.makeSH
-	    minimumEnergy  : 0. # 0.0035
-	    maximumEnergy  : 0.014
+	    minimumEnergy  : 0.0 # 0.0035 #0.0005 bvitali 10% #0.002 looking at SHE_vs_P ##&&
+	    maximumEnergy  : 0.014 
 	}
 
-	TimeClusterFinderDp : { @table::TimeClusterFinderDp}
+	TimeClusterFinderDpP : { @table::TimeClusterFinderDpP
+	    UseCaloCluster : false #####$$
+	    debugLevel : 0
+	    MinKeepHitMVA : -100000 #####$$
+	}
 
-	HelixFinder        : { @table::RobustHelixFinderDp
-	    minNHit    : 5
-	    debugLevel : 100
+	HelixFinder        : { @table::RobustHelixFinderDpP
+	    minNHit    : 5  ##&& 5
+	    debugLevel : 0
+	    diagLevel  : 0
 	    HitBackgroundBits : []
 	    RobustHelixFit : {
-		debugLevel : 100
-		minNHit : 5
+		debugLevel : 0 ## 100
+		minNHit : 10     ## WAS 5 I set to 20 for B and 10 for A
 		# LOOK THE EVENT DISPLAY TO UNDERSTAND IF WE NEED TO TUNE THESE PARAMETERS
 		# minR    : 
 		rcmin   : 50  #from Valerio Bertacchi's study #FIXME!
 		maxR    : 700 
-		minAbsLambda :   100
-		maxAbsLambda :   800
-		mindphi      :   0.1
-		maxdphi      :   2.5
+		minAbsLambda :   100   ##was 100 but for me A [0,800] B [600,2000]
+		maxAbsLambda :   10000 #was800 ##10'000
+		mindphi      :   0.1 #<---------0.1
+		maxdphi      :   2.5 #<---------2.5
 		# minCenterR   :
 		# maxCenterR   :
+		initFZMaxLambda  : 2000 ###### @$ 2000
+		initFZStepLambda : 100 
+		fitFZMaxLambda   : 2000 ###### @$ 2000
+		fitFZStepLambda  : 20
 	    }
 
 	    T0Calculator  : {
@@ -104,31 +113,32 @@ physics : {
 # Seed fit for protons
 #==============================================================================
 	KSFDpP : { @table::KSF # module_type        : KalSeedFit; #
-	    debugLevel                : 100
+	    debugLevel                : 0 ##100
 	    MinNHits                  : 4  # from Valerio Bertacchi's fcl
 	    StrawHitCollection	      : "makeSH"
 	    StrawHitFlagCollection    : "FlagBkgHits:StrawHits"
 	    SeedCollection	      : "HelixFinder:Negative"
 	    KalFit		      : {  @table::KSF.KalFit
-		debugLevel                  : 100
-		MaxIterations                   : 3
-		fieldCorrection	      	  : false
-		materialCorrection              : false
-		seedsmear       		  : 10000
-		maxhitchi                       : 5.0
+		debugLevel                  : 0 ##100
+		MaxIterations               : 3
+		fieldCorrection	      	    : false
+		materialCorrection          : false
+		seedsmear      	            : 10000
+		maxhitchi                   : 5.0 
 		# time external error, assuming s drift velocity of 62.5 #mu m / ns
 		hiterr                          : [ 80., 23.04]
 		ambiguityStrategy       	  : [ 0  , 0    ]
 		t0Tolerance			  : [ 5.0, 5.0  ]
-		weedhits			  : [ true, true ]
-		ResolveAfterWeeding		  : false
+		weedhits		    : [ true, true ]
+	        ResolveAfterWeeding		  : false
 		AddMaterial			  : [ false, false ]
 		initT0   			  : false 
-		useTrkCaloHit                   : false
+		useTrkCaloHit                     : false
 		updateT0			  : [ false, false ]
 		dtOffset                        : @local::TrackCaloMatching.DtOffset
 		strawHitT0Weight                : 1
 		caloHitT0Weight                 : 10
+		IterationTolerance              : 1. ###				       
 	    }
 	    ParameterErrors	      : [10.0,0.05,0.001,10.0,0.05]
 	    #  ParameterErrors	      : [1.0,1.0,1.0,1.0,1.0]
@@ -142,15 +152,16 @@ physics : {
 #------------------------------------------------------------------------------------------
 
 	KFFDpP : { @table::KFF
-	    debugLevel                : 100
+	    debugLevel                : 0 ##100
+
 #	    StrawHitCollection	      : "makeSH"
 	    ComboHitCollection	      : "makeSH"
 	    StrawHitFlagCollection    : "FlagBkgHits:StrawHits"
 	    SeedCollection            : "KSFDpP"
 
 	    KalFit		      : { @table::KFF.KalFit
-		debugLevel                  : 100
-		minnstraws                  : 4
+		debugLevel                  : 0 ##100
+		minnstraws                  : 4 
 		materialCorrection          : false
 		fieldCorrection	            : true
 		initT0		            : false
@@ -165,7 +176,7 @@ physics : {
 		hiterr                      : [ 80.0, 40.0]
 #		t0Tolerance                 : [ 2.0 , 1.0 ]
 		t0Tolerance                 : [ 5.0 , 2.5 ]
-		weedhits		    : [ true, true ]
+		weedhits		    : [ true, true ] 
 		maxhitchi                   : 10.
 		AddMaterial		    : [ false, false]
 		ambiguityStrategy           : [     4,  4]
@@ -177,6 +188,8 @@ physics : {
 		dtOffset                    : @local::TrackCaloMatching.DtOffset
 		strawHitT0Weight            : 1
 		caloHitT0Weight             : 10
+	     	IterationTolerance          : 1.			       
+
 	    }
 	    
 	    GoodKallSeedFitBits	      : ["SeedOK"]
@@ -187,49 +200,58 @@ physics : {
 	}
 
        	CompressDigiMCs : { @table::Stntuple.mc_producers.compressDigiMCs ##CompressDigiMCs Ok 
-	    ## where is "SimParticleTimeMap InputTag"??
 	    timeMapTags : [  ]
 	}  
 
     }
      
     filters  : { @table::filters 
-	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.user.proton_gun_stnmaker_spectrum.xxx.000001.stn" }
+	InitStntuple : { @table::filters.InitStntuple histFileName : "/mu2e/data/personal/bvitali/nts.user.proton_gun_spectrum.3ejected.SHmie0_L.stn" }
+# "dummy.spectrum.stn"
+# nts.user.proton_gun_spectrum.3ejected.SHmie0_L
+# "nts.MDC2018e.NoPrimary_spectrum.SHminE0_L.stn"
+# "nts.user.proton_gun_stnmaker_spectrum.2.SHminE0_L.stn"
+# "nts.user.proton_gun_stnmaker_spectrum.xxx.000001.stn"
+# "nts.user.proton_gun_stnmaker_spectrum.2.SHminE0.stn" 
+# "nts.MDC2018e.NoPrimary_spectrum.SHminE0005.stn"
 
-	StntupleMaker : { @table::StntupleMakerTemplate 
+	FillStntuple : { @table::filters.FillStntuple }
+	
+	StntupleMakerDpPBV : {
+	    @table::filters.StntupleMakerDpp
 	    makePid                    : 0
 	    makeTrackSeeds             : 1
 	    makeTimeClusters           : 1
 	    makeHelices                : 1
-	    timeClusterBlockName       : [ "TimeClusterBlockTpr"     ]
-	    timeClusterModuleLabel     : [ "TimeClusterFinderDp"     ]
-	    helixBlockName             : [ "HelixBlockTpr"           ]
-	    helixModuleLabel           : [ "HelixFinder:Negative"    ]
+	    makeStrawData              : 1 ##Writes down every SH. good for proton_gun. bad for MDC2018e
+	    makeTrackStrawHits         : 1 ##Writes just the SH used in the track
+	  
+ 	    timeClusterBlockName       : [ "TimeClusterBlockDpP"     ] 
+ 	    timeClusterCollTag         : [ "TimeClusterFinderDpP"    ]
+	    helixBlockName             : [ "HelixBlock"              ] 
+	    helixCollTag               : [ "HelixFinder:Negative"    ]
 	    trackSeedBlockName         : [ "TrackSeedBlockTpr"       ]
-	    trackSeedModuleLabel       : [ "KSFDpP"                  ]
-	    shortHelixBlockName        : [ "ShortHelixBlockTpr"      ]
-	    shortHelixModuleLabel      : [ "KSFDpP"                  ]
-	    shortTrackSeedBlockName    : [ "ShortTrackSeedBlockTpr"  ]
-	    shortTrackSeedModuleLabel  : [ "MergePatRecTpr"          ]
-	    trackBlockName             : [ "TrackBlockTpr"           ]
-	    trkRecoModuleLabel         : [ "MergePatRecTpr"          ]
-	    trkExtrapolModuleLabel     : [ "TrackCaloIntersectionTpr"]
-	    trkCaloMatchModuleLabel    : [ "TrackCaloMatchingTpr"    ]
-	    trackStrawHitBlockName     : [ "TrackHitBlockTpr"        ] 
-	    pidBlockName               : [ ""                        ] 
-	    pidModuleLabel             : [                        "" ]
-	    fitParticle                : [                       2212]
-	    fitDirection               : [                          0]
+ 	    trackSeedCollTag           : [ "KSFDpP"                  ] 
+	    trackBlockName             : [ "KFFDpP"                  ]
+	    trackCollTag               : [ "KFFDpP"                  ]
+ 	    trackSHBlockName           : [ "TrackHitBlock"           ] 
+	
+  	   
+	    pidBlockName               : [ "PidBlockDpP"             ] 
+ 	    pidCollTag                 : [                        "" ]
+ 	    fitParticle                : [                       2212]  ##proton is 2212 deutron is 1000010020
+ 	    fitDirection               : [                          0]
 	}
 	detectorFilter:     @local::FilterStepPointMomentum
 
-	MuHitDisplayProton : { @table::MuHitDisplay 
-	    trkRecoModuleLabel           : MergePatRecTpr
-	    trkExtrapol                  : TrackCaloIntersectionTpr
-	    trkCalMatch                  : TrackCaloMatchingTpr
-	    strawHitFlagMakerModuleLabel : "FlagBkgHits:StrawHits"
-	    fitParticle                  : @local::Particle.proton
-	    fitDirection                 : @local::FitDir.downstream
+	MuHitDisplayDpP : { @table::MuHitDisplay 
+	    trackCollTag                 : KFFDpP
+#	    trkRecoModuleLabel           : MergePatRecTpr           ## DpP?
+#	    trkExtrapol                  : TrackCaloIntersectionTpr ## DpP?
+#	    trkCalMatch                  : TrackCaloMatchingTpr     ## DpP?
+#	    strawHitFlagMakerModuleLabel : "FlagBkgHits:StrawHits"
+#	    fitParticle                  : @local::Particle.proton
+#	    fitDirection                 : @local::FitDir.downstream
 	}
     }
 
@@ -250,19 +272,17 @@ physics : {
 #	 @sequence::trkCaloMatchingTprSeq
 	 #
 	 #	 , @sequence::Stntuple.stnmaker
-	 , MuHitDisplayProton
+	 , MuHitDisplayDpP
 	]
+
     p2: [ makeSH, makePH, FlagBkgHits, 
 	  @sequence::Stntuple.cal_reco,
-	  TimeClusterFinderDp, HelixFinder, KSFDpP, KFFDpP 
-	 #
-#	 MergePatRecTpr,
-#	 @sequence::trkCaloMatchingTprSeq
-	 #
-	 #	 , @sequence::Stntuple.stnmaker
- 	 
-#	,CompressDigiMCs 
-	,MuHitDisplayProton
+	  TimeClusterFinderDpP, HelixFinder, KSFDpP, KFFDpP 
+#	 ,MergePatRecTpr
+#	 ,@sequence::Stntuple.stnmaker_dpp
+	 ,InitStntuple ,StntupleMakerDpPBV ,FillStntuple
+#	 ,CompressDigiMCs 
+#	 ,MuHitDisplayDpP
 	]
 
     trigger_paths : [ p2  ]
@@ -270,13 +290,20 @@ physics : {
     end_paths     : [ out ]
 }
 
-services.TFileService.fileName            : "nts.user.proton_gun_stnmaker_spectrum.xxx.000001.root"
+services.TFileService.fileName            : "/mu2e/data/personal/bvitali/nts.user.proton_gun_spectrum.3ejected.SHmie0_L.root"
+# "dummy.spectrum.root"
+# "nts.user.proton_gun_stnmaker_spectrum.xxx.000001.root" 
+# "nts.MDC2018e.NoPrimary_spectrum.SHminE0005.root"
+# "nts.user.proton_gun_stnmaker_spectrum.2.SHminE0.root"
+
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST (.art) file to be written out
 #-----------------------------------------------------------------------------
 # physics.out                               : [ detectorOutput ]
 # outputs.detectorOutput.SelectEvents       : [ p2]
-outputs.detectorOutput.fileName           : "sim.user.proton_gun_stnmaker_spectrum.xxx.000001.art"
+outputs.detectorOutput.fileName           : "/mu2e/data/personal/bvitali/nts.MDC2018e.NoPrimary_spectrum.SHminE002_L_deutron.art"
+# "sim.user.proton_gun_stnmaker_spectrum.xxx.000001.art"
+
 #------------------------------------------------------------------------------
 # uncomment to avoid waisting time on the initialization of detailed neutron 
 # cross sections - that shouldn't affect the electron simulation 
@@ -293,3 +320,4 @@ outputs.detectorOutput.fileName           : "sim.user.proton_gun_stnmaker_spectr
 #------------------------------------------------------------------------------
 physics.producers.generate.muonStops.inputFiles : [ "mergedMuonStops/nts.mu2e.DS-TGTstops.MDC2018a.001002_00000000.root" ] ##this line is a list of generic muon stopping position. it is needed as input (is it using this list?)
 
+# 09 Sept 2019 : the MDC2018e file I used is "pnfs/mu2e/tape/phy-sim/dig/mu2e/NoPrimary-mix/MDC2018e/art/ff/36/digi.mu2e.NoPrimary-mix.MDC2018e.001002_00000000.art" 
