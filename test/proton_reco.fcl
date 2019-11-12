@@ -91,7 +91,7 @@ physics : {
 		# minR    : 
 		rcmin   : 50  #from Valerio Bertacchi's study #FIXME!
 		maxR    : 700 
-		minAbsLambda :   100   ##was 100 but for me A [0,800] B [600,2000]
+		minAbsLambda :   100   
 		maxAbsLambda :   10000 #was800 ##10'000
 		mindphi      :   0.1 #<---------0.1
 		maxdphi      :   2.5 #<---------2.5
@@ -206,7 +206,7 @@ physics : {
     }
      
     filters  : { @table::filters 
-	InitStntuple : { @table::filters.InitStntuple histFileName : "/mu2e/data/personal/bvitali/nts.user.proton_gun_spectrum.3ejected.SHmie0_L.stn" }
+	InitStntuple : { @table::filters.InitStntuple histFileName : "/mu2e/data/personal/bvitali/nts.user.proton_gun_stnmaker_spectrum.2.SHminE0.stn" }
 # "dummy.spectrum.stn"
 # nts.user.proton_gun_spectrum.3ejected.SHmie0_L
 # "nts.MDC2018e.NoPrimary_spectrum.SHminE0_L.stn"
@@ -239,13 +239,15 @@ physics : {
   	   
 	    pidBlockName               : [ "PidBlockDpP"             ] 
  	    pidCollTag                 : [                        "" ]
- 	    fitParticle                : [                       2212]  ##proton is 2212 deutron is 1000010020
+ 	    fitParticle                : [                       2212]
  	    fitDirection               : [                          0]
 	}
 	detectorFilter:     @local::FilterStepPointMomentum
 
 	MuHitDisplayDpP : { @table::MuHitDisplay 
 	    trackCollTag                 : KFFDpP
+
+#	    strawDigiMCCollTag           : "compressDigiMCs" # "makeSD" #when using MDC2018c?
 #	    trkRecoModuleLabel           : MergePatRecTpr           ## DpP?
 #	    trkExtrapol                  : TrackCaloIntersectionTpr ## DpP?
 #	    trkCalMatch                  : TrackCaloMatchingTpr     ## DpP?
@@ -275,6 +277,7 @@ physics : {
 	 , MuHitDisplayDpP
 	]
 
+# Use this for  MDC or .art produced by my protongun
     p2: [ makeSH, makePH, FlagBkgHits, 
 	  @sequence::Stntuple.cal_reco,
 	  TimeClusterFinderDpP, HelixFinder, KSFDpP, KFFDpP 
@@ -285,12 +288,29 @@ physics : {
 #	 ,MuHitDisplayDpP
 	]
 
-    trigger_paths : [ p2  ]
+# Use this for .art produced with the JobConfig/beam/proton.fcl (Andrei)
+    p3: [
+	 @sequence::CommonMC.DigiSim, 
+	 @sequence::TrackerMC.DigiSim, 
+	 @sequence::CaloDigiMC.DigiSim, 
+	 makeSH, makePH, FlagBkgHits, 
+	 @sequence::Stntuple.cal_reco,
+	 TimeClusterFinderDpP, HelixFinder, KSFDpP, KFFDpP 
+#	 ,MergePatRecTpr
+#	 ,@sequence::Stntuple.stnmaker_dpp
+#	 ,InitStntuple 
+#	 ,StntupleMakerDpPBV 
+#	 ,FillStntuple #qualcosa non va bene in Stntuplemaker
+#	 ,CompressDigiMCs 
+	 ,MuHitDisplayDpP
+	]
+
+    trigger_paths : [ p2  ]  ##<---------------------------- Change path to match the right .art file 
     out           : [     ]
     end_paths     : [ out ]
 }
 
-services.TFileService.fileName            : "/mu2e/data/personal/bvitali/nts.user.proton_gun_spectrum.3ejected.SHmie0_L.root"
+services.TFileService.fileName            : "/mu2e/data/personal/bvitali/nts.user.proton_gun_stnmaker_spectrum.2.SHminE0.root"
 # "dummy.spectrum.root"
 # "nts.user.proton_gun_stnmaker_spectrum.xxx.000001.root" 
 # "nts.MDC2018e.NoPrimary_spectrum.SHminE0005.root"
@@ -301,7 +321,7 @@ services.TFileService.fileName            : "/mu2e/data/personal/bvitali/nts.use
 #-----------------------------------------------------------------------------
 # physics.out                               : [ detectorOutput ]
 # outputs.detectorOutput.SelectEvents       : [ p2]
-outputs.detectorOutput.fileName           : "/mu2e/data/personal/bvitali/nts.MDC2018e.NoPrimary_spectrum.SHminE002_L_deutron.art"
+outputs.detectorOutput.fileName           : "/mu2e/data/personal/bvitali/dummy.art"
 # "sim.user.proton_gun_stnmaker_spectrum.xxx.000001.art"
 
 #------------------------------------------------------------------------------

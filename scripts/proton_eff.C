@@ -5,8 +5,36 @@
 #import "TF1.h"
 #import "TFitter.h"
 
-void proton_eff2(){//using genparticle e geometric acceptance
-  TString file = "/mu2e/data/users/bvitali/proton_gun/proton_gun.2.SHminE0_L.hist";
+void generate_spectrum(TH1F* h, int N, double m){
+  TF1 * spectrum   = new TF1("spectrum","EjectedProtonSpectrum",0,500,1);
+  spectrum->SetParameter(0,m);
+  //TCanvas * c_spectrum = new TCanvas("c_spectrum","EjectedProtonSpectrum",400,400);
+  //c_spectrum->cd();
+  //spectrum->Draw();
+  h->FillRandom("spectrum",N);
+  TCanvas * c_genp = new TCanvas("c_genp","Histo of generated particles",400,400);
+  c_genp->cd();
+  h->DrawCopy("histo");
+};
+
+void proton_eff(){//using the spectrum
+  /*
+    Let's find the efficiency for proton reconstruction
+
+    The first lines are used to decide the type of file and the name
+    
+    Ppr is the momentum of the generated protons
+    Precopr is the generated momentum of the reconstructed protons
+    genp is the spectrum of protons generated via EjectedProtonSpectrum()
+    
+    proton_gun/pgun2/proton_gun.2.SHminE0_L
+
+
+  */
+
+  TString mdc_file  = "/mu2e/data/users/bvitali/MDC2018e/MDC2018e.SHminE002_L.hist";
+  TString pgun_file = "/mu2e/data/users/bvitali/proton_gun/pgun2/proton_gun.2.SHminE0.hist";
+  TString file;
 
   bool single = false ;                                         //<------------------------ decide if pgun or mdc
   int choice;
@@ -24,66 +52,17 @@ void proton_eff2(){//using genparticle e geometric acceptance
   
   TH1F * Precopr   = gh1(file,"Validation2","trk_71/precopr");  // <---------------- the input .hist
   Precopr->GetXaxis()->SetTitle("p [MeV/c]");
-}
-
-
-void proton_eff(){//using the spectrum
-  /*
-    Let's find the efficiency for proton reconstruction
-
-    The first lines are used to decide the type of file and the name
-    
-    Ppr is the momentum of the generated protons
-    Precopr is the generated momentum of the reconstructed protons
-    genp is the spectrum of protons generated via EjectedProtonSpectrum()
-  */
-
-  TString mdc_file  = "/mu2e/data/users/bvitali/MDC2018e/MDC2018e.SHminE002_L.hist";
-  TString pgun_file = "/mu2e/data/users/bvitali/proton_gun/proton_gun.2.SHminE0_L.hist";
-  TString file;
-
-  bool single = false ;                                         //<------------------------ decide if pgun or mdc
-  int choice;
-  printf("By default is it proton_gun? %d \n",single);
-  printf("Do you want to change? (y=1 / n=0) \n");
-  cin>>choice;
-  if(choice==1) single = !single;
-  if(single)  file = pgun_file;
-  else        file = mdc_file;
-  cout<<"Using the file:"<<file<<endl;
-
-  //Protons
-  TH1F * Ppr       = gh1(file,"Validation2","gen_0/ppr");      // <----------------- the input .hist 
-  Ppr->GetXaxis()->SetTitle("p [MeV/c]");
-  
-  TH1F * Precopr   = gh1(file,"Validation2","trk_71/precopr");  // <---------------- the input .hist
-  Precopr->GetXaxis()->SetTitle("p [MeV/c]");
 
   //create and draw the 'genp' spectrum of ejected proton spectrum (10M events)
   TH1F * genp      = new TH1F("genp","Generated protons",2000,0,500);
   genp->GetXaxis()->SetTitle("p [MeV/c]");
-  TF1 * spectrum   = new TF1("spectrum","EjectedProtonSpectrum",0,500,1);
-  spectrum->SetParameter(0,938.3);
-  //TCanvas * c_spectrum = new TCanvas("c_spectrum","EjectedProtonSpectrum",400,400);
-  //c_spectrum->cd();
-  //spectrum->Draw();
-  genp->FillRandom("spectrum",10000000);
-  TCanvas * c_genp = new TCanvas("c_genp","Histo of generated particles",400,400);
-  c_genp->cd();
-  genp->DrawCopy("histo");
+  generate_spectrum(genp,10000000,938.3);
 
   //create and draw the 'genp' spectrum of ejected Deuton spectrum (10M events)
   TH1F * genp_deu     = new TH1F("genp_deu","Generated deutons",2000,0,500);
   genp_deu->GetXaxis()->SetTitle("p [MeV/c]");
-  TF1 * spectrum_deu   = new TF1("spectrum_deu","EjectedProtonSpectrum",0,500,1);
-  spectrum_deu->SetParameter(0,1875.6);
-  //TCanvas * c_spectrum_deu = new TCanvas("c_spectrum_deu","EjectedDeutonSpectrum",400,400);
-  //c_spectrum_deu->cd();
-  //spectrum_deu->Draw();
-  genp_deu->FillRandom("spectrum_deu",10000000);
-  TCanvas * c_genp_deu = new TCanvas("c_genp_deu","Histo of generated particles",400,400);
-  c_genp_deu->cd();
-  genp_deu->DrawCopy("histo");
+  generate_spectrum(genp_deu,10000000,1875.6);
+  
 
   //create and draw the KineticEnergy spectrum of ejected proton spectrum (10M events) 
   if(false){      //<-----------------------Set to TRUE if you want the Kinetic Energy
@@ -173,6 +152,8 @@ void proton_eff(){//using the spectrum
   else {
     //using the luminosity as rescaling factor
     TH2F * istlum_vs_ntrk   = gh2(file,"Validation2","evt_0/istlum_vs_ntrk");  // <-------------change here "MDC2018e.SHminE002.hist    
+
+    //change 0.0019 to 0.0018 and 3.8e7 to 3.9e7 (talking with Andy)
     double number_event     = (double) istlum_vs_ntrk->GetEntries();
     double mean_lum = 3.8e7; //istlum_vs_ntrk->GetMeanY();
     printf("mean %f\n",mean_lum);
@@ -211,7 +192,6 @@ void proton_eff(){//using the spectrum
     Pdeu->Draw("hist");
     c3->cd(2);
     DeuPreco->Draw("hist");
-
 
     Pdeu->Sumw2();
     DeuPreco->Sumw2();
@@ -401,7 +381,8 @@ double EjectedProtonSpectrum(double *p_poit, double *m_poit){
   double p = p_poit[0];
   double m = m_poit[0];
 
-  double e = p*p/(2*m); //momentum->energy
+  // double e = p*p/(2*m); //momentum->energy
+  double e = sqrt(p*p + m*m)-m; //momentum->energy rel
 
   //these numbers are in MeV!!!!
   static const double emn = 1.4; // replacing par1 from GMC
@@ -437,7 +418,6 @@ double EjectedProtonSpectrum(double *p_poit, double *m_poit){
     }
   return spectrumWeight;
 }
-
 
 /*
   Energy spectrum for protons (copied from EjectedProtonSpectrum)

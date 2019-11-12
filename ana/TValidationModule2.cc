@@ -742,7 +742,7 @@ void TValidationModule2::FillTimeClusterHistograms(TimeClusterHist_t*   Hist, TS
   Hist->fClusterEnergy ->Fill(clusterE);
 
   if(GetHeaderBlock()->InstLum() == -1 && fSimpBlock){
-    TSimParticle* simp = fSimpBlock->FindParticle(0);
+    TSimParticle* simp = fSimpBlock->Particle(0);
     double p  = simp->StartMom()->P();
     Hist->fNComboHitsVsP ->Fill(p,ncombohits);
   }
@@ -781,7 +781,7 @@ void TValidationModule2::FillHelixHistograms(HelixHist_t*   Hist, TStnHelix*    
   Hist->fD0            ->Fill(Helix->D0());
 
   if(fSimpBlock){
-    TSimParticle* simp = fSimpBlock->FindParticle(0);
+    TSimParticle* simp = fSimpBlock->Particle(0);
     p  = simp->StartMom()->P();
   }
 
@@ -1827,8 +1827,8 @@ void TValidationModule2::FillHistograms() {
 	FillGenpHistograms(fHist.fGenp[2],genp);
       }
     }
-    //if there is at least a SH
-    if(fNStrawHits>0 && GetHeaderBlock()->InstLum()==-1) FillGenpHistograms(fHist.fGenp[3],genp);
+    //if there is at least a SH  GetHeaderBlock()->InstLum()==-1
+    if(fNStrawHits>0) FillGenpHistograms(fHist.fGenp[3],genp);
   }
 }
 
