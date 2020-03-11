@@ -24,14 +24,36 @@ outputs.detectorOutput.outputCommands     : ["keep *_*_*_*"]                    
 #------------------------------------------------------------------------------
 # output file names ##/mu2e/data/personal/bvitali/nts._USER_.proton_gun_stnmaker.xxx.000003.root
 #------------------------------------------------------------------------------
-services.TFileService.fileName            : "/mu2e/data/personal/bvitali/nts._USER_.proton_gun_stnmaker.xxx.000004.root" 
-physics.filters.InitStntuple.histFileName : "/mu2e/data/personal/bvitali/nts._USER_.proton_gun_stnmaker.xxx.000004.stn"
-outputs.detectorOutput.fileName           : "/mu2e/data/personal/bvitali/sim._USER_.proton_gun_stnmaker.xxx.000004.art"
+services.TFileService.fileName            : "/mu2e/data/personal/bvitali/nts._USER_.proton_gun_stnmaker.2020p.000002.root" 
+physics.filters.InitStntuple.histFileName : "/mu2e/data/personal/bvitali/nts._USER_.proton_gun_stnmaker.2020p.000002.stn"
+outputs.detectorOutput.fileName           : "/mu2e/data/personal/bvitali/sim._USER_.proton_gun_stnmaker.2020p.000002.art"
 #------------------------------------------------------------------------------
 # uncomment to avoid waisting time on the initialization of detailed neutron 
 # cross sections - that shouldn't affect the electron simulation 
 #------------------------------------------------------------------------------
-physics.producers.generate                      : { @table::Stntuple.producers.pgun }
+physics.producers.generate                      : { 
+    
+    @table::Stntuple.producers.pgun
+    physics : { @table::StoppedParticleReactionGun.physics
+	pdgId            : 2212 ##1000010020
+	
+	#elow             : 0. ##100
+	#ehi              : 500. ##500
+	
+	#spectrumVariable : "momentum"
+	#spectrumShape    : "flat"
+	
+	#spectrumShape     : "ejectedProtons"
+	#spectrumVariable : kineticEnergy
+	#nbins             : 1000
+	
+	spectrumVariable : "momentum"
+	spectrumShape : "tabulated"
+	spectrumFileName : "ConditionsService/data/ejected_protons_weights.tbl"
+	}
+    
+}
+
 physics.producers.g4run.physics.physicsListName : "QGSP_BERT"
 #------------------------------------------------------------------------------
 # currently = choose MVA's of the right sign

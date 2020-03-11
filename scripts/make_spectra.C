@@ -4,14 +4,24 @@
 // The parametrization is the one developed by Pasha for the general meeting
 // in Feb 2020, after the release of the new AlCap-TWIST analysis
 ////
+#include "TF1.h"
+#include "TH1.h"
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+using namespace std;
 
 //new parametrization by Pasha (General Meeting Feb 2020:  Doc-31745-v1)
-double EjectedProtonSpectrum_2020(double *p_poit, double *m_poit){
-
-  double p = p_poit[0]; // p - Momentum (MeV/c)
-  double m = m_poit[0];  
-  double e = sqrt(p*p + m*m)-m; //momentum->kinetic energy rel (MeV/c)
-  
+double EjectedProtonSpectrum_2020(double *p_poit, double *par){
+  double m = par[0];
+  double choice = par[1];
+  double e;
+  if(choice == 0.){ e = p_poit[0];}
+  else if(choice == 1.){
+    double p = p_poit[0]; // p - Momentum (MeV/c)
+    e = sqrt(p*p + m*m)-m; //momentum->kinetic energy rel (MeV/c)
+  }
+  else cout<<"nither energy or momentum?"<<endl;
   double par0,par1,par2,par3,par4,par5;
 
   //one function for proton and deuterons but different par values
@@ -47,96 +57,68 @@ double EjectedProtonSpectrum_2020(double *p_poit, double *m_poit){
   return f;
 }
 
-//FillRandom an histogram with the proper parametrization,
-//normalize it to 1 and save the weights in a .tbl
-void make_proton_deuteron_weights(){
-  TF1 * spectrum   = new TF1("spectrum","EjectedProtonSpectrum_2020",0,1000,1);
-  char choose;
-  int n;
-
-  //Do you whant the proton or deuteron spectrum? how many?
-  cout<<"proton [p] or deuteron [d] spectrum?"<<endl;
-  cin>>choose;
-  cout<<"how many should I generate?"<<endl;
-  cin>>n;
-
-  //Name the file accordingly to your choice
-  TString out_name;
-  if(choose == 'p') {
-    spectrum->SetParameter(0,938.3);
-    out_name = "ejected_protons_weights.tbl";
-  }
-  else if(choose == 'd'){
-    spectrum->SetParameter(0,1875.6);
-    out_name = "ejected_deuterons_weights.tbl";
-  }  
-  else {cout<<"Something is off"<<endl; return;}
-
-  //create the histo, fill it and scale it
-  TH1F * h = new TH1F("h","h",10000,-.05,999.05);
-  h->FillRandom("spectrum",n);
-  h->Scale(1./h->Integral());
-  h->Draw("");
-  spectrum->Draw("same");
-
-  //save the weights on file
-  //I wanted to save underflows but negative energy created problems (i from 1) 
-  ofstream output;
-  output.open(out_name);
-  for(Int_t i=1; i< h->GetNbinsX()+2; i++){
-    output << h->GetBinCenter(i)<<" "<<h->GetBinContent(i)<<endl;
-  }
-  output.close();
-}
-
-void test(){  
-  Float_t step = 0.10000 ;
-  TF1 * spectrum   = new TF1("spectrum","EjectedProtonSpectrum_2020",-0.1,1000.1,1);
+void make_spectra(){  
+  double step = 0.1 ;
+  TF1 * spectrum   = new TF1("spectrum","EjectedProtonSpectrum_2020",-0.1,1000.1,2);
   char choose;
 
-  //Do you whant the proton or deuteron spectrum? how many?
+  double par[2];
+  
+  //choose the particle
   cout<<"proton [p] or deuteron [d] spectrum?"<<endl;
   cin>>choose;
 
+  //choose the variable
+  cout<<"energy [0] or momentum [1] as variable?"<<endl;
+  cin>>par[1];
+  
   //Name the file accordingly to your choice
   TString out_name;
+
   if(choose == 'p') {
-    spectrum->SetParameter(0,938.3);
-    out_name = "ejected_protons_weights.tbl";
+    par[0]=938.3;
+    spectrum->SetParameters(par);
+    out_name = "ejected_protons_";
   }
   else if(choose == 'd'){
-    spectrum->SetParameter(0,1875.6);
-    out_name = "ejected_deuterons_weights.tbl";
+    par[0]=1875.6;
+    spectrum->SetParameters(par);
+    out_name = "ejected_deuterons_";
   }  
-  
   else {cout<<"Something is off"<<endl; return;}
+
+  if(par[1] == 0)out_name = out_name + "energy_weights.tbl";
+  else if(par[1] == 1)out_name = out_name + "momentum_weights.tbl";
+  else cout<<"nither energy or momentum?"<<endl;
   
-  Float_t integral=spectrum->Integral(0,1000);
+  //in order to keep the spectrum normalized to 1
+  double integral = spectrum -> Integral(0,1000);
   cout<<integral<<endl;
 
   ofstream output;
   output.open(out_name);
 
-  Float_t x=0., y=0.;
+  double x=0., y=0.;
 
   for(Int_t n = 0; n<1000/step; n+=1){
-    x += step;
     y = (spectrum -> Eval(x))/integral;
     cout<<x<<" "<<y<<endl;
     output << x<<" "<<y<<endl;
+    x += step;
+
   }
   output.close();  
+  
 }
 
 //voit to make a histogram out of a weights' table
-//just 2 columns of numbers but can manage some commenting
 void read_txt(){
   //defined like this because we want the values to be the center of the bins
-  TH1F * h = new TH1F("h","h",10000,-.05,999.05); 
+  TH1F * h = new TH1F("h","h",10000,-.05,999.95); 
   Int_t bin;
 
   string read;
-  Float_t x, y;
+  double x, y;
   Int_t line=0;
 
   cout<<"what table do you want to make a histogram?"<<endl;
@@ -169,14 +151,16 @@ void read_txt(){
 
 //support void just to plot the functions
 void see_proton(){
-  TF1 * spectrum   = new TF1("spectrum","EjectedProtonSpectrum_2020",0,500,1);
-  spectrum->SetParameter(0,938.3);
+  TF1 * spectrum   = new TF1("spectrum","EjectedProtonSpectrum_2020",0,500,2);
+  double par[2]={938.3,0};
+  spectrum->SetParameters(par);
   spectrum->Draw();
 }
 
 void see_deuteron(){
-  TF1 * spectrum   = new TF1("spectrum","EjectedProtonSpectrum_2020",0,1000,1);
-  spectrum->SetParameter(0,1875.6);
+  TF1 * spectrum   = new TF1("spectrum","EjectedProtonSpectrum_2020",0,1000,2);
+  double par[2]={1875.6,0};
+  spectrum->SetParameters(par);
   spectrum->Draw();
 }
 
@@ -231,40 +215,4 @@ double EjectedProtonSpectrum(double *p_poit, double *m_poit){
       spectrumWeight = 0.;
     }
   return spectrumWeight;
-}
-
-//simple void to see how the spectra changed
-void difference(){
-  int n = 1e7;
-  TF1 * spectrum   = new TF1("spectrum","EjectedProtonSpectrum",0,500,1);
-  TF1 * spectrum_new   = new TF1("spectrum_new","EjectedProtonSpectrum_2020",0,500,1);
-  TF1 * spectrum_deu   = new TF1("spectrum_deu","EjectedProtonSpectrum",0,500,1);
-  TF1 * spectrum_deu_new   = new TF1("spectrum_deu_new","EjectedProtonSpectrum_2020",0,500,1);
-
-  spectrum->SetParameter(0,938.3);
-  spectrum_new->SetParameter(0,938.3);
-  spectrum_deu->SetParameter(0,1875.6);
-  spectrum_deu_new->SetParameter(0,1875.6);
-
-  TH1F * h_spectrum = new TH1F("h_spectrum","",100,0,500);
-  h_spectrum->FillRandom("spectrum",n);
-  h_spectrum->Scale(1/h_spectrum->GetEntries());
-  h_spectrum->SetLineColor(kRed);
-  h_spectrum->SetLineStyle(2);
-  TH1F * h_spectrum_deu = new TH1F("h_spectrum_deu","",100,0,500);
-  h_spectrum_deu->FillRandom("spectrum_deu",n);
-  h_spectrum_deu->Scale(1/h_spectrum_deu->GetEntries());
-  h_spectrum_deu->SetLineStyle(2);
-  TH1F * h_spectrum_new = new TH1F("h_spectrum_new","",100,0,500);
-  h_spectrum_new->FillRandom("spectrum_new",n);
-  h_spectrum_new->Scale(1/h_spectrum_new->GetEntries());
-  h_spectrum_new->SetLineColor(kRed);
-  TH1F * h_spectrum_deu_new = new TH1F("h_spectrum_deu_new","",100,0,500);
-  h_spectrum_deu_new->FillRandom("spectrum_deu_new",n);
-  h_spectrum_deu_new->Scale(1/h_spectrum_deu_new->GetEntries());
-
-  h_spectrum->Draw("histo");
-  h_spectrum_deu->Draw("histo same");
-  h_spectrum_new->Draw("histo same");
-  h_spectrum_deu_new->Draw("histo same");
 }
