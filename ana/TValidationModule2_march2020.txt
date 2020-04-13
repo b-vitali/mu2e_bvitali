@@ -151,7 +151,7 @@ void TValidationModule2::BookGenpHistograms(GenpHist_t* Hist, const char* Folder
 //   char name [200];
 //   char title[200];
 
-  HBook1F(Hist->fP      ,"p"       ,Form("%s: Momentum"     ,Folder),1000,     0, 200,Folder);
+  HBook1F(Hist->fP      ,"p"       ,Form("%s: Momentum"     ,Folder),2000,     0, 500,Folder);
   HBook1F(Hist->fPdgCode[0],"pdg_code_0",Form("%s: PDG Code[0]"     ,Folder),200, -100, 100,Folder);
   HBook1F(Hist->fPdgCode[1],"pdg_code_1",Form("%s: PDG Code[1]"     ,Folder),500, -2500, 2500,Folder);
   HBook1F(Hist->fGenID  ,"gen_id"  ,Form("%s: Generator ID" ,Folder), 100,     0, 100,Folder);
@@ -160,11 +160,12 @@ void TValidationModule2::BookGenpHistograms(GenpHist_t* Hist, const char* Folder
   HBook1F(Hist->fR0     ,"r"       ,Form("%s: R0"           ,Folder), 100,     0,  100,Folder);
   HBook1F(Hist->fCosTh  ,"cos_th"  ,Form("%s: Cos(Theta)"   ,Folder), 200,   -1.,   1.,Folder);
 
+  HBook1F(Hist->fPall      ,"pall"        ,Form("%s:True momentum of p and d",Folder), 2000,  0, 500,Folder);                      //
   HBook1F(Hist->fPpr      ,"ppr"        ,Form("%s:True momentum of protons",Folder), 2000,  0, 500,Folder);                      //
   HBook1F(Hist->fPprCheck ,"pprcheck"   ,Form("%s:True momentum CHECK of protons",Folder), 2000,  0, 50000,Folder);              //
   HBook1F(Hist->fPdeu     ,"pdeu"       ,Form("%s:True momentum of deuteria",Folder), 2000,  0, 500,Folder);                     //
   HBook1F(Hist->fPdeuCheck,"pdeucheck"  ,Form("%s:True momentum CHECK of deuteria",Folder), 2000,  0, 50000,Folder);             //
-  HBook2F(Hist->fPrecoVsNSH ,"preco_vs_nsh" ,Form("%s:True momentum vs number of SH",Folder), 2000, 0,500, 150, 0, 150, Folder); //%%
+
 }
 
 //-----------------------------------------------------------------------------
@@ -172,10 +173,10 @@ void TValidationModule2::BookTrackHistograms(TrackHist_t* Hist, const char* Fold
 //   char name [200];
 //   char title[200];
 
-  HBook1F(Hist->fP[0]       ,"p"        ,Form("%s: Track P(Z1)"       ,Folder), 500,  35  ,500. ,Folder);
+  HBook1F(Hist->fP[0]       ,"p"        ,Form("%s: Track P(Z1)"       ,Folder), 400,  35  ,400. ,Folder);
   HBook1F(Hist->fP[1]       ,"p_1"      ,Form("%s: Track P(total)[1]" ,Folder), 100, 104.5,105.5,Folder);
-  HBook1F(Hist->fP[2]       ,"p_2"      ,Form("%s: Track P(total)[1]" ,Folder),1000,   0  ,500. ,Folder);
-  HBook1F(Hist->fP0         ,"p0"       ,Form("%s: Track P(Z0)"       ,Folder),1000,   0  ,500. ,Folder);
+  HBook1F(Hist->fP[2]       ,"p_2"      ,Form("%s: Track P(total)[1]" ,Folder),1000,   0  ,400. ,Folder);
+  HBook1F(Hist->fP0         ,"p0"       ,Form("%s: Track P(Z0)"       ,Folder),1000,   0  ,400. ,Folder);
   HBook1F(Hist->fP2         ,"p2"       ,Form("%s: Track P(z=-1540)"  ,Folder),1000,   0  ,400. ,Folder);
   HBook1D(Hist->fPDio       ,"pdio"     ,Form("%s: Track P(DIO WT)"   ,Folder), 400,  70  ,150. ,Folder);
   Hist->fPDio->Sumw2(kTRUE);
@@ -274,7 +275,7 @@ void TValidationModule2::BookTrackHistograms(TrackHist_t* Hist, const char* Fold
   HBook2F(Hist->fPrecoVsTanTh ,"preco_vs_tanth" ,Form("%s:True P vs TanTh",Folder), 2000, 0,500, 2000, 0 ,10, Folder);                    //
   HBook2F(Hist->fPrecoVsSHE ,"preco_vs_shE" ,Form("%s:True P vs SHE",Folder), 2000, 0,500, 200, 0, 0.015, Folder);                        //
   HBook2F(Hist->fTanThVsSHE ,"tanth_vs_shE" ,Form("%s:TanTh vs SHE",Folder), 2000, 0, 10, 200, 0, 0.015, Folder);                         //
-  HBook2F(Hist->fPrecoVsNSH ,"preco_vs_nsh" ,Form("%s:true P vs number of SH",Folder), 2000, 0,500, 150, 0, 150, Folder);                 //
+  HBook2F(Hist->fPrecoVsNSH ,"preco_vs_nsh" ,Form("%s:true P vs number of SH",Folder), 2000, 0,500, 200, 0, 150, Folder);                 //
   HBook2F(Hist->fFracSHVsPreco ,"fracsh_vs_preco" ,Form("%s:Fraction of SH vs true P",Folder), 2000, 0,500, 200, 0, 1.1, Folder);         //
 
   HBook2F(Hist->fLastTrkZVsPreco ,"lasttrkz_vs_preco" ,Form("%s:LastTrkZ vs true momentum",Folder), 2000, 0,500, 34, -2, 32, Folder);     //
@@ -588,6 +589,7 @@ void TValidationModule2::BookHistograms() {
   book_genp_histset[1] = 1;		// events with tracks
   book_genp_histset[2] = 1;		// events with good tracks
   book_genp_histset[3] = 1;		// At least a SH
+  book_genp_histset[4] = 1;		// At least 4 SH
 
   for (int i=0; i<kNGenpHistSets; i++) {
     if (book_genp_histset[i] != 0) {
@@ -858,6 +860,9 @@ void TValidationModule2::FillGenpHistograms(GenpHist_t* Hist, TGenParticle* Genp
   Hist->fP->Fill(p);
   Hist->fCosTh->Fill(cos_th);
  
+  if(Genp->GetPdgCode() == 2212 || Genp->GetPdgCode() == 1000010020)
+    if (Genp->GetStatusCode()==28) Hist->fPall->Fill(p);
+
   if(Genp->GetPdgCode() == 2212){ //If it is proton
     if (Genp->GetStatusCode()==28) Hist->fPpr->Fill(p);
     Hist->fPprCheck->Fill(p); 
@@ -867,7 +872,7 @@ void TValidationModule2::FillGenpHistograms(GenpHist_t* Hist, TGenParticle* Genp
     if (Genp->GetStatusCode()==28) Hist->fPdeu->Fill(p);    
     Hist->fPdeuCheck->Fill(p); 
   }
-  Hist->fPrecoVsNSH->Fill(p,fNStrawHits); //%%
+  
 }
 
 //-----------------------------------------------------------------------------
@@ -1135,7 +1140,9 @@ You enter both if it is
     if(GetHeaderBlock()->InstLum() == -1 && fNStrawHits > 0){
       
       //Number of hits and fraction of 'active hits' Vs True momentum (with SHBlock and not TrackStrawHitBlock)  
-      double fractionActive = (double)Track->NActive()/(double)fNStrawHits;
+      double fractionActive = (double)Track->NActive()/(double)fNStrawHits; //all SH 
+      //double fractionActive = (double)Track->NActive()/(double)simp->NStrawHits(); //SH made by the simp (proton)
+      //printf("Track->NAcative() %f, simp->NStrawHits() %f \n", (double)Track->NActive(), (double)simp->NStrawHits()); //simp->NSH=0? 
       Hist->fPrecoVsNSH->Fill(p_genp,fNStrawHits);   
       Hist->fFracSHVsPreco->Fill(p_genp,fractionActive);  
 
@@ -1829,6 +1836,8 @@ void TValidationModule2::FillHistograms() {
     }
     //if there is at least a SH  GetHeaderBlock()->InstLum()==-1
     if(fNStrawHits>0) FillGenpHistograms(fHist.fGenp[3],genp);
+    if(fNStrawHits>4) FillGenpHistograms(fHist.fGenp[4],genp);
+
   }
 }
 

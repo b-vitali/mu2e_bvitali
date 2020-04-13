@@ -363,7 +363,6 @@ void GenpCheck(){
   */
 }
 
-
 /*
   Momentum spectrum for both protons and deutons (different mass as parameter)
 */
@@ -383,7 +382,7 @@ double EjectedProtonSpectrum(double *p_poit, double *m_poit){
 
   // double e = p*p/(2*m); //momentum->energy
   double e = sqrt(p*p + m*m)-m; //momentum->energy rel
-  double jacob = p / sqrt(p*p + m*m);
+
   //these numbers are in MeV!!!!
   static const double emn = 1.4; // replacing par1 from GMC
   static const double par2 = 1.3279;
@@ -416,7 +415,7 @@ double EjectedProtonSpectrum(double *p_poit, double *m_poit){
     {
       spectrumWeight = 0.;
     }
-  return spectrumWeight*jacob;
+  return spectrumWeight;
 }
 
 /*
@@ -456,6 +455,59 @@ double EjectedProtonSpectrum2(double e){
       spectrumWeight = 0.;
     }
   return spectrumWeight;
+}
+
+
+//NEW ALCAP INFOS -> NEW DISTRIBUTIONS
+/*
+  Momentum spectrum for both protons and deutons (different mass as parameter) NEW DISTRIBUTION
+*/
+double EjectedProtonSpectrum_new(double *p_poit, double *m_poit){
+  //   e - proton kinetic energy (MeV)
+  //   p - proton Momentum (MeV/c)
+  //   Pasha at the general meeting Feb 2020:  Doc-31745-v1
+  double p = p_poit[0];
+  double m = m_poit[0];
+
+  // double e = p*p/(2*m); //momentum->energy
+  double e = sqrt(p*p + m*m)-m; //momentum->energy rel
+
+  static const double par0 = 0.0099;
+  static const double par1 = 0.505;
+  static const double par2 = 1.8;
+  static const double par3 = 7.755;
+  static const double par4 = 3.4;
+  static const double par5 = 5.9;
+  
+  double spectrumWeight;
+  
+  if (e >= par3)
+    {
+      spectrumWeight=exp(-e*par5);
+    }
+  
+  else if (e < par3 && e>0)
+    {
+      double xarg=(e / (1 + par1*e));
+      double xpot=std::pow(xarg,par2);
+      double xexp=exp(-par4*e);
+      spectrumWeight=xpot*xexp;
+    }
+  else
+    {
+      spectrumWeight = 0.;
+    }
+  return spectrumWeight;
+}
+
+void difference(){
+  TF1 * spectrum   = new TF1("spectrum","EjectedProtonSpectrum",0,500,1);
+  TF1 * spectrum_new   = new TF1("spectrum_new","EjectedProtonSpectrum_new",0,500,1);
+  spectrum->SetParameter(0,938.3);
+  spectrum_new->SetParameter(0,938.3);
+
+  spectrum->Draw();
+  spectrum_new->Draw("same");
 }
 
 

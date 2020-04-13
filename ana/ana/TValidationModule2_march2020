@@ -265,12 +265,11 @@ public:
     TH1F*    fR0;			// 
     TH1F*    fP;			// 
     TH1F*    fCosTh;			// 
-    
+    TH1F*    fPall;                     //bastiano proton eff
     TH1F*    fPpr;                      //bastiano proton eff
     TH1F*    fPprCheck;                 //bastiano proton eff
     TH1F*    fPdeu;                     //bastiano proton eff
     TH1F*    fPdeuCheck;                //bastiano proton eff
-    TH2F*    fPrecoVsNSH;               //bastiano proton eff
 
   };
 					// histograms for the simulated CE

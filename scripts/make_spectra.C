@@ -12,16 +12,20 @@
 using namespace std;
 
 //new parametrization by Pasha (General Meeting Feb 2020:  Doc-31745-v1)
-double EjectedProtonSpectrum_2020(double *p_poit, double *par){
+//the funci
+double EjectedProtonSpectrum_2020(double *x_poit, double *par){
   double m = par[0];
   double choice = par[1];
   double e;
-  if(choice == 0.){ e = p_poit[0];}
+  double jacob;
+
+  if(choice == 0.){ e = x_poit[0]; jacob = 1;}
   else if(choice == 1.){
-    double p = p_poit[0]; // p - Momentum (MeV/c)
+    double p = x_poit[0]; // p - Momentum (MeV/c)
     e = sqrt(p*p + m*m)-m; //momentum->kinetic energy rel (MeV/c)
+    jacob = p / sqrt(p*p + m*m); //change of variable->jacobiano
   }
-  else cout<<"nither energy or momentum?"<<endl;
+  else cout<<"choice = " << choice << "nither energy or momentum?"<<endl;
   double par0,par1,par2,par3,par4,par5;
 
   //one function for proton and deuterons but different par values
@@ -54,16 +58,19 @@ double EjectedProtonSpectrum_2020(double *p_poit, double *par){
     double c4 = pow(par3/(1+par1*par3),par2)*exp(-par3/par4);
     f = c4*exp(-(e-par3)/par5);
   }
+  f = f*jacob*par0;
   return f;
 }
 
 void make_spectra(){  
-  double step = 0.1 ;
-  TF1 * spectrum   = new TF1("spectrum","EjectedProtonSpectrum_2020",-0.1,1000.1,2);
+  double step = 0.1, limit ;
+  TF1 * spectrum;
   char choose;
-
   double par[2];
-  
+  double m_p=938.3, m_d=1875.6;
+  double p_max = 1000.; //kEnergy: 249.9 MeV deuterons,  432.9 MeV protons
+  double e_max;
+
   //choose the particle
   cout<<"proton [p] or deuteron [d] spectrum?"<<endl;
   cin>>choose;
@@ -71,28 +78,38 @@ void make_spectra(){
   //choose the variable
   cout<<"energy [0] or momentum [1] as variable?"<<endl;
   cin>>par[1];
-  
+
+  //different function to have the same limits
+  if(par[1]==1) limit = p_max;
+  else if(par[1]==0) {
+    if(choose=='p') limit = sqrt(p_max*p_max+m_p*m_p)-m_p;
+    else if(choose=='d') limit = sqrt(p_max*p_max+m_d*m_d)-m_d;
+  }
+  cout<<limit<<endl;
+  spectrum = new TF1("spectrum","EjectedProtonSpectrum_2020",0.,limit,2);  
+
   //Name the file accordingly to your choice
   TString out_name;
-
   if(choose == 'p') {
-    par[0]=938.3;
+    par[0]=m_p;
     spectrum->SetParameters(par);
     out_name = "ejected_protons_";
   }
   else if(choose == 'd'){
-    par[0]=1875.6;
+    par[0]=m_d;
     spectrum->SetParameters(par);
     out_name = "ejected_deuterons_";
   }  
   else {cout<<"Something is off"<<endl; return;}
-
+  
   if(par[1] == 0)out_name = out_name + "energy_weights.tbl";
   else if(par[1] == 1)out_name = out_name + "momentum_weights.tbl";
   else cout<<"nither energy or momentum?"<<endl;
   
+  cout<<"we are here"<<endl;
+
   //in order to keep the spectrum normalized to 1
-  double integral = spectrum -> Integral(0,1000);
+  double integral = spectrum -> Integral(0,limit);
   cout<<integral<<endl;
 
   ofstream output;
@@ -100,22 +117,33 @@ void make_spectra(){
 
   double x=0., y=0.;
 
-  for(Int_t n = 0; n<1000/step; n+=1){
+  x=0;
+  for(Int_t n = 0; n<limit/step; n+=1){
     y = (spectrum -> Eval(x))/integral;
-    cout<<x<<" "<<y<<endl;
+    if(n%500==0){ cout<<x<<" "<<y<<endl; }
     output << x<<" "<<y<<endl;
     x += step;
 
   }
-  output.close();  
-  
+  output.close();
+  cout<<"limit "<<limit<<endl;
+
 }
 
-//voit to make a histogram out of a weights' table
+//void to make a histogram out of a weights' table
 void read_txt(){
   //defined like this because we want the values to be the center of the bins
   TH1F * h = new TH1F("h","h",10000,-.05,999.95); 
   Int_t bin;
+
+  //TH1F * h_k = new TH1F("k","k",10000,-.05,999.95); 
+
+  double m;
+  char choose;
+  cout<<"proton [p] or deuteron [d]?"<<endl;
+  cin>>choose;
+  if(choose == 'p') m = 938.3; 
+  else if (choose == 'd') m = 1875.6;
 
   string read;
   double x, y;
@@ -135,84 +163,21 @@ void read_txt(){
 
 	bin=h->GetXaxis()->FindBin(x);
 	h->SetBinContent(bin,y);
+	
+	//x = sqrt(x*x + m*m)-m;
+	//bin=h_k->GetXaxis()->FindBin(x);
+	//h_k->AddBinContent(bin,y);
       }
       else if (read == "skip all"){cout<<"['skip all' at line: "<<line<<"] "<<endl; break;}
       else {std::cout<<"[Comment at line: "<<line<<"] "<<read<<endl;}
       line+=1;
     }
   }
+  TCanvas * c = new TCanvas();
+  c->cd();
   h->Draw("");
-}
-
-
-/////////////////////////////////////////////
-//---- from here some additional stuff ----//
-/////////////////////////////////////////////
-
-//support void just to plot the functions
-void see_proton(){
-  TF1 * spectrum   = new TF1("spectrum","EjectedProtonSpectrum_2020",0,500,2);
-  double par[2]={938.3,0};
-  spectrum->SetParameters(par);
-  spectrum->Draw();
-}
-
-void see_deuteron(){
-  TF1 * spectrum   = new TF1("spectrum","EjectedProtonSpectrum_2020",0,1000,2);
-  double par[2]={1875.6,0};
-  spectrum->SetParameters(par);
-  spectrum->Draw();
-}
-
-
-//old parametrization. Not used but here for comparison
-double EjectedProtonSpectrum(double *p_poit, double *m_poit){
-  //taken from GMC
-  //
-  //   Ed Hungerford  Houston University May 17 1999
-  //   Rashid Djilkibaev New York University (modified) May 18 1999
-  //
-  //   e - Kinetic energy (MeV)
-  //   p - Momentum (MeV/c)
-  //
-  //   Generates a proton spectrum similar to that observed in
-  //   u capture in Si.  JEPT 33(1971)11 and PRL 20(1967)569
-  double p = p_poit[0];
-  double m = m_poit[0];
-
-  double e = sqrt(p*p + m*m)-m; //momentum->energy rel
-
-  //these numbers are in MeV!!!!
-  static const double emn = 1.4; // replacing par1 from GMC
-  static const double par2 = 1.3279;
-  static const double par3=17844.0;
-  static const double par4=.32218;
-  static const double par5=100.;
-  static const double par6=10.014;
-  static const double par7=1050.;
-  static const double par8=5.103;
   
-  double spectrumWeight;
-  
-  if (e >= 20)
-    {
-      spectrumWeight=par5*exp(-(e-20.)/par6);
-    }
-  
-  else if(e >= 8.0 && e <= 20.0)
-    {
-      spectrumWeight=par7*exp(-(e-8.)/par8);
-    }
-  else if (e > emn)
-    {
-      double xw=(1.-emn/e);
-      double xu=std::pow(xw,par2);
-      double xv=par3*exp(-par4*e);
-      spectrumWeight=xv*xu;
-    }
-  else
-    {
-      spectrumWeight = 0.;
-    }
-  return spectrumWeight;
+  //TCanvas * ck = new TCanvas();
+  //ck->cd();
+  //h_k->Draw();
 }
