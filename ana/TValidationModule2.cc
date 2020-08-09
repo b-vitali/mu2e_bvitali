@@ -358,6 +358,7 @@ void TValidationModule2::BookHistograms() {
   book_timecluster_histset[0] = 1;   // all events
   book_timecluster_histset[1] = 1;   // timeclusters with NHits>10
   book_timecluster_histset[2] = 1;   // timeclusters with NHits>15
+  book_timecluster_histset[3] = 1;   // timeclusters with NHits>15
 
    for (int i=0; i<kNTrackSeedHistSets; i++) {
     if (book_timecluster_histset[i] != 0) {

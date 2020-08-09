@@ -9,7 +9,7 @@ BEGIN_PROLOG
   bgHitFiles   : @nil
   INPUT_MODULE : EmptyEvent
   TRIGGER_PATH : p1
-  PROCESS_NAME : PPlusGunStnmaker ##EMinusGunStnmaker
+  PROCESS_NAME : EMinusGunStnmaker
 END_PROLOG
 
 #include "Stntuple/test/stnmaker.fcl"
@@ -24,25 +24,24 @@ outputs.detectorOutput.outputCommands     : ["keep *_*_*_*"]                    
 #------------------------------------------------------------------------------
 # output file names ##/mu2e/data/personal/bvitali/nts._USER_.proton_gun_stnmaker.xxx.000003.root
 #------------------------------------------------------------------------------
-services.TFileService.fileName            : "/mu2e/data/personal/bvitali/nts._bvitali_.proton_gun_stnmaker.DUMMY.000001.root"
-physics.filters.InitStntuple.histFileName : "/mu2e/data/personal/bvitali/nts._bvitali_.proton_gun_stnmaker.DUMMY.000001.stn"
-outputs.detectorOutput.fileName           : "/mu2e/data/personal/bvitali/sim._bvitali_.proton_gun_stnmaker.DUMMY.000001.art"
+services.TFileService.fileName            : "/mu2e/data/personal/bvitali/nts._bvitali_.e_gun_stnmaker.DUMMY.000001.root"
+physics.filters.InitStntuple.histFileName : "/mu2e/data/personal/bvitali/nts._bvitali_.e_gun_stnmaker.DUMMY.000001.stn"
+outputs.detectorOutput.fileName           : "/mu2e/data/personal/bvitali/sim._bvitali_.e_gun_stnmaker.DUMMY.000001.art"
 #------------------------------------------------------------------------------
 # uncomment to avoid waisting time on the initialization of detailed neutron 
 # cross sections - that shouldn't affect the electron simulation 
 #------------------------------------------------------------------------------
 physics.producers.generate                      : { 
     
-    @table::Stntuple.producers.pgun
-    physics : { @table::StoppedParticleReactionGun.physics
-	pdgId            : 2212
-	#pdgId            : 1000010020
+    @table::Stntuple.producers.egun
+    #physics : { @table::StoppedParticleReactionGun.physics
+#	pdgId            : 2212
+#	
+#	elow             : 0. 
+#	ehi              : 100.
 	
-	elow             : 100. ##100
-	ehi              : 300. ##500
-	
-	spectrumVariable  : "momentum"
-	spectrumShape     : "flat"
+#	spectrumVariable  : "momentum"
+#	spectrumShape     : "flat"
 	
 	#spectrumShape     : "ejectedProtons"
 	#spectrumVariable  : "kineticEnergy"
@@ -51,7 +50,7 @@ physics.producers.generate                      : {
 	#spectrumVariable : kineticEnergy ## "momentum"
 	#spectrumShape    : "tabulated"
 	#spectrumFileName : "ConditionsService/data/ejected_deuterons_energy_weights.tbl"
-	}
+#	}
     
 }
 

@@ -34,7 +34,7 @@ gen_seq : [ generate, g4run, detectorFilter,
 TimeClusterFinderDpP : { @table::TimeClusterFinder
             AveragePitch : 0.63 # signed
 	    MinNHits   : 5                  
-	    DtMax      : 70  #from Valerio Bertacchi's study #FIXME! 70
+	    DtMax      : 70  #from Bertacchi #FIXME!
 	    HitBackgroundBits : []
 	    tmax       : 1800 ###bvitali in order to reconstruct proton with Time ~1690
 	    T0Calculator  : { @table::TimeCalculator
@@ -89,7 +89,7 @@ physics : {
 		minNHit : 10     ## WAS 5 I set to 20 for B and 10 for A
 		# LOOK THE EVENT DISPLAY TO UNDERSTAND IF WE NEED TO TUNE THESE PARAMETERS
 		# minR    : 
-		rcmin   : 50  #from Valerio Bertacchi's study #FIXME!
+		rcmin   : 50  #from Bertacchi
 		maxR    : 700 
 		minAbsLambda :   100   
 		maxAbsLambda :   10000 #was800 ##10'000
@@ -114,7 +114,7 @@ physics : {
 #==============================================================================
 	KSFDpP : { @table::KSF # module_type        : KalSeedFit; #
 	    debugLevel                : 0 ##100
-	    MinNHits                  : 4  # from Valerio Bertacchi's fcl
+	    MinNHits                  : 4  # from Bertacchi
 	    StrawHitCollection	      : "makeSH"
 	    StrawHitFlagCollection    : "FlagBkgHits:StrawHits"
 	    SeedCollection	      : "HelixFinder:Negative"
@@ -206,7 +206,7 @@ physics : {
     }
      
     filters  : { @table::filters 
-	InitStntuple : { @table::filters.InitStntuple histFileName : "/mu2e/data/personal/bvitali/nts.bvitali.proton_gun_stnmaker_NoAbs_d_1B.dummy.000001.stn" }
+	InitStntuple : { @table::filters.InitStntuple histFileName : "/mu2e/data/personal/bvitali/nts.bvitali.proton_gun_stnmaker.DUMMY.000001.stn" }
 # "dummy.spectrum.stn"
 # nts.user.proton_gun_spectrum.3ejected.SHmie0_L
 # "nts.MDC2018e.NoPrimary_spectrum.SHminE0_L.stn"
@@ -310,7 +310,7 @@ physics : {
     end_paths     : [ out ]
 }
 
-services.TFileService.fileName            : "/mu2e/data/personal/bvitali/nts.bvitali.proton_gun_stnmaker_NoAbs_d_1B.dummy.000001.root"
+services.TFileService.fileName            : "/mu2e/data/personal/bvitali/nts.bvitali.proton_gun_stnmaker.DUMMY.000001.root"
 # "dummy.spectrum.root"
 # "nts.user.proton_gun_stnmaker_spectrum.xxx.000001.root" 
 # "nts.MDC2018e.NoPrimary_spectrum.SHminE0005.root"
