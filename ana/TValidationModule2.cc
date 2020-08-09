@@ -165,6 +165,9 @@ void TValidationModule2::BookGenpHistograms(GenpHist_t* Hist, const char* Folder
   HBook1F(Hist->fPdeu     ,"pdeu"       ,Form("%s:True momentum of deuteria",Folder), 2000,  0, 500,Folder);                     //
   HBook1F(Hist->fPdeuCheck,"pdeucheck"  ,Form("%s:True momentum CHECK of deuteria",Folder), 2000,  0, 50000,Folder);             //
   HBook2F(Hist->fPrecoVsNSH ,"preco_vs_nsh" ,Form("%s:True momentum vs number of SH",Folder), 2000, 0,500, 150, 0, 150, Folder); //%%
+  HBook2F(Hist->fPrecoVsCosTh ,"preco_vs_cos_th" ,Form("%s:True momentum vs Cos(Theta)",Folder), 2000, 0,500, 400, -1, 1, Folder); //%%
+  HBook2F(Hist->fCosThVsNSH ,"cos_th_vs_nsh" ,Form("%s:Cos(Theta) vs number of SH",Folder), 400, -1, 1, 150, 0, 150, Folder); //%%
+
 }
 
 //-----------------------------------------------------------------------------
@@ -310,7 +313,8 @@ void TValidationModule2::BookEventHistograms(EventHist_t* Hist, const char* Fold
   HBook1F(Hist->fBestHyp[1],"bfh1"     ,Form("%s: Best Fit Hyp[1](e-,e+,mu-,mu+)"  ,Folder),5,0,5,Folder);
   HBook1F(Hist->fNGenp     ,"ngenp"    ,Form("%s: N(Gen Particles)"                ,Folder),500,0,500,Folder);
 
-  HBook1F(Hist->fQSH       ,"qsh"      ,Form("%s: Charge for each SH"              ,Folder),500,0,0.014,Folder);                          // 
+  HBook1F(Hist->fQSH       ,"qsh"      ,Form("%s: Charge for each SH"              ,Folder),500,0,0.014,Folder);                          //
+  HBook1F(Hist->fQSH_p       ,"qsh_p"      ,Form("%s: Charge for each SH if made by Protons",Folder),500,0,0.014,Folder);                 // %%%
   HBook2F(Hist->fNSHVsPreco ,"nsh_vs_preco" ,Form("%s:Number of SH  vs true(?) momentum",Folder), 2000, 0,500, 200,0,200, Folder);        //
   HBook2F(Hist->fLumVsNTrk ,"istlum_vs_ntrk" ,Form("%s:Istant Luminosity vs N of Tracks",Folder), 20, 0,20, 2000, 1e6,100*1e6, Folder);   //
   HBook2F(Hist->fLastZVsPreco ,"lastz_vs_preco" ,Form("%s:LastZ vs true(?) momentum",Folder), 2000, 0,500, 34, -2, 32, Folder);           //
@@ -328,6 +332,15 @@ void TValidationModule2::BookSimpHistograms(SimpHist_t* Hist, const char* Folder
   HBook1F(Hist->fNStrawHits,"nsth"        ,Form("%s: n straw hits"                 ,Folder),200,   0,200,Folder);
   HBook1F(Hist->fMomTargetEnd    ,"ptarg" ,Form("%s: Mom after Stopping Target" ,Folder),2000,  0,500,Folder);
   HBook1F(Hist->fMomTrackerFront ,"pfront",Form("%s: Mom at the Tracker Front"  ,Folder),2000,  0,500,Folder);
+
+
+  HBook1F(Hist->fPvd      ,"pvd"       ,Form("%s: Momentum_VD"     ,Folder), 2000,  0, 500,Folder);
+  HBook1F(Hist->fCosTh  ,"cos_th"  ,Form("%s: Cos(Theta)_VD"   ,Folder), 200,   -1.,   1.,Folder);
+  HBook2F(Hist->fPvdVsNSH ,"pvd_vs_nsh" ,Form("%s:Momentum_VD vs number of SH",Folder), 2000, 0,500, 150, 0, 150, Folder); //%%
+  HBook2F(Hist->fPvdVsCosTh ,"pvd_vs_cos_th" ,Form("%s:Momentum_VD vs Cos(Theta)",Folder), 2000, 0,500, 400, -1, 1, Folder); //%%
+  HBook2F(Hist->fCosThVsNSH ,"cos_th_vs_nsh" ,Form("%s:Cos(Theta)_VD vs number of SH",Folder), 400, -1, 1, 150, 0, 150, Folder); //%%
+  HBook2F(Hist->fPvdVsPgen ,"pvd_vs_pgen" ,Form("%s:Momentum_VD vs Momentum_gen",Folder), 2000, 0,500, 2000, 0,500, Folder); //%%
+
 
 }
 //_____________________________________________________________________________
@@ -420,9 +433,9 @@ void TValidationModule2::BookHistograms() {
   int book_event_histset[kNEventHistSets];
   for (int i=0; i<kNEventHistSets; i++) book_event_histset[i] = 0;
 
-  book_event_histset[ 0] = 1;		// all events
-  book_event_histset[ 1] = 1;	        // events with a reconstructed track
-  book_event_histset[ 2] = 1;	        // events without reconstructed tracks
+  book_event_histset[ 0] = 0;		// all events
+  book_event_histset[ 1] = 0;	        // events with a reconstructed track
+  book_event_histset[ 2] = 0;	        // events without reconstructed tracks
   book_event_histset[ 3] = 1;	        // events with a reconstructed cluster
   book_event_histset[ 4] = 1;	        // events without reconstructed clusters
   book_event_histset[ 5] = 1;	        // events w/o reconstructed tracks, |costh|<0.4
@@ -466,6 +479,7 @@ void TValidationModule2::BookHistograms() {
       fHist.fEvent[i] = new EventHist_t;
       BookEventHistograms(fHist.fEvent[i],Form("Hist/%s",folder_name));
     }
+    else fHist.fEvent[i] = NULL;
   }
 //-----------------------------------------------------------------------------
 // book simp histograms
@@ -474,7 +488,8 @@ void TValidationModule2::BookHistograms() {
   for (int i=0; i<kNSimpHistSets; i++) book_simp_histset[i] = 0;
 
   book_simp_histset[ 0] = 1;		// all events
-  
+  book_simp_histset[ 1] = 1;		// at least 1SH
+
   for (int i=0; i<kNSimpHistSets; i++) {
     if (book_simp_histset[i] != 0) {
       sprintf(folder_name,"sim_%i",i);
@@ -588,6 +603,7 @@ void TValidationModule2::BookHistograms() {
   book_genp_histset[1] = 1;		// events with tracks
   book_genp_histset[2] = 1;		// events with good tracks
   book_genp_histset[3] = 1;		// At least a SH
+  book_genp_histset[4] = 1;		// At least a required minumum angle
 
   for (int i=0; i<kNGenpHistSets; i++) {
     if (book_genp_histset[i] != 0) {
@@ -605,6 +621,7 @@ void TValidationModule2::BookHistograms() {
 // need MC truth branch
 //-----------------------------------------------------------------------------
 void TValidationModule2::FillEventHistograms(EventHist_t* Hist) {
+  if(!Hist) {std::cout<<"dogs"<<std::endl;return;}//&&%
   double            cos_th(-2.), dio_wt(-1.), xv(0.), yv(0.), rv(0.), zv(0.), p(0);
   TLorentzVector    mom;
 
@@ -678,6 +695,7 @@ void TValidationModule2::FillEventHistograms(EventHist_t* Hist) {
     Hist->fDtClS->Fill(dt);
     Hist->fSHTime->Fill(sh->Time());
     Hist->fQSH->Fill(sh->Energy()); // SH chargesh->Energy()
+    if(sh->PdgCode() == 2212)Hist->fQSH_p->Fill(sh->Energy()); //SH charges just for protons %%%
     if(sh->Station()>maxStation) maxStation=sh->Station();
     if(sh->Station()<minStation) minStation=sh->Station();
     if (fabs(dt+15.)< 50) n_good_hits += 1;
@@ -867,7 +885,9 @@ void TValidationModule2::FillGenpHistograms(GenpHist_t* Hist, TGenParticle* Genp
     if (Genp->GetStatusCode()==28) Hist->fPdeu->Fill(p);    
     Hist->fPdeuCheck->Fill(p); 
   }
-  Hist->fPrecoVsNSH->Fill(p,fNStrawHits); //%%
+  Hist->fPrecoVsNSH->Fill(p,fNStrawHits);
+  Hist->fPrecoVsCosTh->Fill(p,cos_th);
+  Hist->fCosThVsNSH->Fill(cos_th,fNStrawHits);
 }
 
 //-----------------------------------------------------------------------------
@@ -877,6 +897,41 @@ void TValidationModule2::FillSimpHistograms(SimpHist_t* Hist, TSimParticle* Simp
   Hist->fMomTargetEnd->Fill(Simp->fMomTargetEnd);
   Hist->fMomTrackerFront->Fill(Simp->fMomTrackerFront);
   Hist->fNStrawHits->Fill(Simp->fNStrawHits);
+
+
+  //Trying to use the VirtualDetectors
+  if(fStepPointMCBlock) {
+    //std::cout<<"there seems to be something"<<std::endl;
+    //std::cout<<fStepPointMCBlock->NStepPoints()<<std::endl;
+    TStepPointMC* fSpmc;
+    Float_t p;
+    Float_t cos_th;
+    
+    for(int j = 0; j<fStepPointMCBlock->NStepPoints(); j++){
+      fSpmc = fStepPointMCBlock->StepPointMC(j);
+
+      if(fSpmc->VolumeID()==10){ //10,13,14 (DataProducts/inc/VirtualDetectorId.hh) fSpmc->VolumeID()==13 || fSpmc->VolumeID()==14  
+	//fSpmc->Print();
+	p = fSpmc->fMom.Mag();
+	cos_th = fSpmc->fMom.Z()/p;
+	Hist->fPvd->Fill(p);
+	Hist->fCosTh->Fill(cos_th);
+	Hist->fPvdVsNSH->Fill(p ,fNStrawHits);
+	Hist->fPvdVsCosTh->Fill(p,cos_th);
+	Hist->fCosThVsNSH->Fill(cos_th,fNStrawHits);
+	
+	// looking at the difference with genp
+	std::cout<<fGenpBlock->NParticles()<<std::endl;
+
+	if(fGenpBlock->NParticles()==1){ 
+	  TLorentzVector momgenp;
+	  fGenpBlock->Particle(0)->Momentum(momgenp);
+	  Hist->fPvdVsPgen->Fill(momgenp.P(),p);// %%%
+	}
+      }
+    }
+  }
+
 }
 
 //-----------------------------------------------------------------------------
@@ -1125,7 +1180,7 @@ You enter both if it is
 
     TStrawHitData*  sh = NULL;
     TTrackStrawHitData*  tsh = NULL;
-    double tan = simp->StartMom()->Pz()/simp->StartMom()->P(); ////////////////COSENO 
+    double tan = simp->StartMom()->Py()/simp->StartMom()->Pz(); ////////////////Check 
     
     //How are p and the angle linked?
     Hist->fPrecoVsTanTh->Fill(p_genp,tan); 
@@ -1223,7 +1278,8 @@ int TValidationModule2::BeginJob() {
   RegisterDataBlock("StrawDataBlock","TStrawDataBlock"   ,&fStrawDataBlock);
   RegisterDataBlock("GenpBlock"     ,"TGenpBlock"        ,&fGenpBlock);
   RegisterDataBlock("SimpBlock"     ,"TSimpBlock"        ,&fSimpBlock);
-  RegisterDataBlock("TrackHitBlock", "TTrackStrawHitBlock"   ,&fTrackSHBlock); //<<-----------TrackHitBlock-----------------------||||||||||||||
+  RegisterDataBlock("TrackHitBlock", "TTrackStrawHitBlock"   ,&fTrackSHBlock); //<<-----------TrackHitBlock-------------||||||||||||||
+  RegisterDataBlock("SpmcBlockVDet","TStepPointMCBlock",&fStepPointMCBlock);   //<<-----------StepPointMC---------------||||||||||||||
 
 //-----------------------------------------------------------------------------
 // book histograms
@@ -1408,6 +1464,9 @@ void TValidationModule2::FillHistograms() {
 //-----------------------------------------------------------------------------
   if (fSimp) {
     FillSimpHistograms(fHist.fSimp[0],fSimp);
+    if(fNStrawHits>0){
+      FillSimpHistograms(fHist.fSimp[1],fSimp);
+    }
   }
 
 //--------------------------------------------------------------------------------
@@ -1818,6 +1877,8 @@ void TValidationModule2::FillHistograms() {
 // GEN_0: all particles
 //-----------------------------------------------------------------------------
   TGenParticle* genp;
+  p      = mom.P();
+  cos_th = mom.Pz()/p;
   for (int i=0; i<fNGenp; i++) {
     genp = fGenpBlock->Particle(i);
     FillGenpHistograms(fHist.fGenp[0],genp);
@@ -1828,7 +1889,13 @@ void TValidationModule2::FillHistograms() {
       }
     }
     //if there is at least a SH  GetHeaderBlock()->InstLum()==-1
-    if(fNStrawHits>0) FillGenpHistograms(fHist.fGenp[3],genp);
+    if(fNStrawHits>0){
+      FillGenpHistograms(fHist.fGenp[3],genp);
+      p      = mom.P();
+      cos_th = mom.Pz()/p;
+      //require something (rhight now is a minimum angle)
+      if(cos_th<-0.2) FillGenpHistograms(fHist.fGenp[4],genp); //cos_th<-0.2
+    }
   }
 }
 
@@ -1855,6 +1922,7 @@ int TValidationModule2::Event(int ientry) {
   fCalDataBlock->GetEntry(ientry);
   fGenpBlock->GetEntry(ientry);
   fSimpBlock->GetEntry(ientry);
+  fStepPointMCBlock->GetEntry(ientry); //%%%
 //-----------------------------------------------------------------------------
 // assume electron in the first particle, otherwise the logic will need to 
 // be changed

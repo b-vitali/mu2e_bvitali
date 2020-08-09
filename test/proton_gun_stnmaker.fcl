@@ -24,9 +24,9 @@ outputs.detectorOutput.outputCommands     : ["keep *_*_*_*"]                    
 #------------------------------------------------------------------------------
 # output file names ##/mu2e/data/personal/bvitali/nts._USER_.proton_gun_stnmaker.xxx.000003.root
 #------------------------------------------------------------------------------
-services.TFileService.fileName            : "/mu2e/data/personal/bvitali/nts._bvitali_.proton_gun_stnmaker.NoAbs_p_0.5B.000001.root"
-physics.filters.InitStntuple.histFileName : "/mu2e/data/personal/bvitali/nts._bvitali_.proton_gun_stnmaker.NoAbs_p_0.5B.000001.stn"
-outputs.detectorOutput.fileName           : "/mu2e/data/personal/bvitali/sim._bvitali_.proton_gun_stnmaker.NoAbs_p_0.5B.000001.art"
+services.TFileService.fileName            : "/mu2e/data/personal/bvitali/nts._bvitali_.proton_gun_stnmaker.DUMMY.000001.root"
+physics.filters.InitStntuple.histFileName : "/mu2e/data/personal/bvitali/nts._bvitali_.proton_gun_stnmaker.DUMMY.000001.stn"
+outputs.detectorOutput.fileName           : "/mu2e/data/personal/bvitali/sim._bvitali_.proton_gun_stnmaker.DUMMY.000001.art"
 #------------------------------------------------------------------------------
 # uncomment to avoid waisting time on the initialization of detailed neutron 
 # cross sections - that shouldn't affect the electron simulation 

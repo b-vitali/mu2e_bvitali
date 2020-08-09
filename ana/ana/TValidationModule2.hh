@@ -30,7 +30,7 @@
 
 #include "Stntuple/obj/TTrackStrawHitBlock.hh"
 #include "Stntuple/obj/TTrackStrawHitData.hh"
-
+#include "Stntuple/obj/TStepPointMCBlock.hh"
 class TValidationModule2: public TStnModule {
 public:
 
@@ -100,6 +100,7 @@ public:
     TH1F*    fBestHyp[2];		// [0]: by chi2, [1]: by fit consistency
     TH1F*    fNGenp;                    // N(particles in GENP block)
     TH1F*    fQSH;                      // SH charge
+    TH1F*    fQSH_p;                    // bastiano SH charge from protons
     TH2F*    fNSHVsPreco;               // bastiano proton eff
     TH2F*    fLumVsNTrk;                // number of trks and luminosity
     TH2F*    fLastZVsPreco;             // bastiano proton eff
@@ -271,6 +272,8 @@ public:
     TH1F*    fPdeu;                     //bastiano proton eff
     TH1F*    fPdeuCheck;                //bastiano proton eff
     TH2F*    fPrecoVsNSH;               //bastiano proton eff
+    TH2F*    fPrecoVsCosTh;             //bastiano proton eff
+    TH2F*    fCosThVsNSH;               //bastiano proton eff
 
   };
 					// histograms for the simulated CE
@@ -279,6 +282,13 @@ public:
     TH1F*    fMomTargetEnd;
     TH1F*    fMomTrackerFront;
     TH1F*    fNStrawHits;
+
+    TH1F*    fPvd;                      //bastiano proton eff
+    TH1F*    fCosTh;                    //bastiano proton eff
+    TH2F*    fPvdVsNSH;                 //bastiano proton eff
+    TH2F*    fPvdVsCosTh;               //bastiano proton eff
+    TH2F*    fCosThVsNSH;               //bastiano proton eff
+    TH2F*    fPvdVsPgen;                //bastiano proton eff
   };
 
 //-----------------------------------------------------------------------------
@@ -336,6 +346,8 @@ public:
   TGenpBlock*            fGenpBlock;
   TSimpBlock*            fSimpBlock;
   TTrackStrawHitBlock*   fTrackSHBlock;
+  TStepPointMCBlock*     fStepPointMCBlock; //??
+
 					// additional track parameters (assume ntracks < 20)
   TrackPar_t        fTrackPar[20];
 					// histograms filled

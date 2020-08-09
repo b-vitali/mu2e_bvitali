@@ -69,7 +69,7 @@ physics : {
 	}
 
 	makeSH            : { @table::TrkHitReco.producers.makeSH
-	    minimumEnergy  : 0.0 # 0.0035 #0.0005 bvitali 10% #0.002 looking at SHE_vs_P ##&&
+	    minimumEnergy  : 0.002 # 0.0035 #0.0005 bvitali 10% #0.002 looking at SHE_vs_P ##&&
 	    maximumEnergy  : 0.014 
 	}
 
@@ -206,7 +206,7 @@ physics : {
     }
      
     filters  : { @table::filters 
-	InitStntuple : { @table::filters.InitStntuple histFileName : "/mu2e/data/personal/bvitali/nts.bvitali.proton_gun_stnmaker_NoAbs_d_1B.dummy.000001.stn" }
+	InitStntuple : { @table::filters.InitStntuple histFileName : "/mu2e/data/personal/bvitali/test002.stn" }
 # "dummy.spectrum.stn"
 # nts.user.proton_gun_spectrum.3ejected.SHmie0_L
 # "nts.MDC2018e.NoPrimary_spectrum.SHminE0_L.stn"
@@ -220,11 +220,11 @@ physics : {
 	StntupleMakerDpPBV : {
 	    @table::filters.StntupleMakerDpp
 	    makePid                    : 0
-	    makeTrackSeeds             : 1
+	    makeTrackSeeds             : 0
 	    makeTimeClusters           : 1
-	    makeHelices                : 1
+	    makeHelices                : 0
 	    makeStrawData              : 1 ##Writes down every SH. good for proton_gun. bad for MDC2018e
-	    makeTrackStrawHits         : 1 ##Writes just the SH used in the track
+	    makeTrackStrawHits         : 0 ##Writes just the SH used in the track
 	  
  	    timeClusterBlockName       : [ "TimeClusterBlockDpP"     ] 
  	    timeClusterCollTag         : [ "TimeClusterFinderDpP"    ]
@@ -283,9 +283,9 @@ physics : {
 	  TimeClusterFinderDpP, HelixFinder, KSFDpP, KFFDpP 
 #	 ,MergePatRecTpr
 #	 ,@sequence::Stntuple.stnmaker_dpp
-#	 ,InitStntuple ,StntupleMakerDpPBV ,FillStntuple
+	 ,InitStntuple ,StntupleMakerDpPBV ,FillStntuple
 #	 ,CompressDigiMCs 
-	 ,MuHitDisplayDpP
+#	 ,MuHitDisplayDpP
 	]
 
 # Use this for .art produced with the JobConfig/beam/proton.fcl (Andrei)
@@ -305,16 +305,22 @@ physics : {
 	 ,MuHitDisplayDpP
 	]
 
+    p4: [makeSH, makePH, FlagBkgHits, 
+	 @sequence::Stntuple.cal_reco,
+	 TimeClusterFinderDpP,
+	 InitStntuple ,StntupleMakerDpPBV ,FillStntuple]
+
     trigger_paths : [ p2  ]  ##<---------------------------- Change path to match the right .art file 
     out           : [     ]
     end_paths     : [ out ]
 }
 
-services.TFileService.fileName            : "/mu2e/data/personal/bvitali/nts.bvitali.proton_gun_stnmaker_NoAbs_d_1B.dummy.000001.root"
+services.TFileService.fileName            : "/mu2e/data/personal/bvitali/test002.root"
 # "dummy.spectrum.root"
 # "nts.user.proton_gun_stnmaker_spectrum.xxx.000001.root" 
 # "nts.MDC2018e.NoPrimary_spectrum.SHminE0005.root"
 # "nts.user.proton_gun_stnmaker_spectrum.2.SHminE0.root"
+# "/mu2e/data/personal/bvitali/nts.bvitali.proton_gun_stnmaker_NoAbs_d_1B.dummy.000001.root"
 
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST (.art) file to be written out

@@ -33,22 +33,22 @@ double EjectedProtonSpectrum_2020(double *x_poit, double *par){
   double par0,par1,par2,par3,par4,par5;
 
   //one function for proton and deuterons but different par values
-  if(m==938.3){//protons
-    par0 = 0.0099;
-    par1 = 0.505;
-    par2 = 1.8;
-    par3 = 7.755;
-    par4 = 3.4;
-    par5 = 5.9;
+  if(m==938.3){    //protons
+    par0 = 0.01;   // 0.009927 ± 0.0009604
+    par1 = 0.505;  // 0.5048 ± 0.008764
+    par2 = 1.8;    // 1.763 ± 0.6477
+    par3 = 7.755;  // 7.755 ± 0.004043
+    par4 = 3.4;    // 3.445 ± 0.3426
+    par5 = 5.87;   // 5.869 ± 0.1362
   }
 
-  else if(m==1875.6){//deuterons
-    par0 = 0.0011;
-    par1 = 0.5;
-    par2 = 6.5;
-    par3 = 7.755;
-    par4 = 2.5;
-    par5 = 7.6;
+  else if(m==1875.6){ //deuterons
+    par0 = 0.0011;    // 0.0011 ± 0.0003352
+    par1 = 0.5;       // 0.5 ± 0
+    par2 = 6.5;       // 6.543 ± 0.783
+    par3 = 7.755;     // 7.755 ± 0
+    par4 = 2.5;       // 2.492 ± 0.2597
+    par5 = 7.6;       // 7.597 ± 0.2495
   }
 
   double f;
@@ -241,10 +241,10 @@ void comparison(){
   double y_p[N],y_d[N],y_hp[N],y_hd[N];
   for(int i = 0; i<N; i++){
     x[i] =i*kEmax/N;
-    y_p[i] =  (spectrum_p -> Eval(x[i]))/integral_p * 0.045;
-    y_d[i] =  (spectrum_d -> Eval(x[i]))/integral_d * 0.018;
-    y_hp[i] =  (spectrum_h -> Eval(x[i]))/integral_hp * 0.05;
-    y_hd[i] =  (spectrum_h -> Eval(x[i]))/ integral_hd *0.05*0.5; //p:d=2:1 ?
+    y_p[i] =  (spectrum_p -> Eval(x[i]));// /integral_p * 0.045;
+    y_d[i] =  (spectrum_d -> Eval(x[i]));// /integral_d * 0.018;
+    y_hp[i] =  (spectrum_h -> Eval(x[i]));// /integral_hp * 0.05;
+    y_hd[i] =  (spectrum_h -> Eval(x[i]));// / integral_hd *0.05*0.5; //p:d=2:1 ?
   }
 
   double scale_p, scale_d;
