@@ -8,8 +8,8 @@
 BEGIN_PROLOG
   bgHitFiles   : @nil
   INPUT_MODULE : EmptyEvent
-  TRIGGER_PATH : p1
-  PROCESS_NAME : PPlusGunStnmaker ##EMinusGunStnmaker
+  TRIGGER_PATHS : [ stntuple_p1 ]
+  PROCESS_NAME : PPlusGunStnmaker
 END_PROLOG
 
 #include "Stntuple/test/stnmaker.fcl"
@@ -18,15 +18,16 @@ source : {module_type : EmptyEvent}
 # uncomment the next 2 lines if you want the DST (.art) file to be written out
 #------------------------------------------------------------------------------
 #Try to redifine detectorFilter as in JobConfig/beam/prolog.fcl
-physics.out                               : [ detectorOutput ]
-outputs.detectorOutput.SelectEvents       : [ @local::TRIGGER_PATH ]
-outputs.detectorOutput.outputCommands     : ["keep *_*_*_*"]                    ##KEEP EVERYTHING 
+physics                                   : { @table::Stntuple.physics }
+physics.output_path                       : [ defaultOutput ]
+outputs.defaultOutput.SelectEvents        : [ @sequence::TRIGGER_PATHS ]
+outputs.defaultOutput.outputCommands      : ["keep *_*_*_*"]                    ##KEEP EVERYTHING 
 #------------------------------------------------------------------------------
 # output file names ##/mu2e/data/personal/bvitali/nts._USER_.proton_gun_stnmaker.xxx.000003.root
 #------------------------------------------------------------------------------
 services.TFileService.fileName            : "/mu2e/data/personal/bvitali/nts._bvitali_.proton_gun_stnmaker.DUMMY.000001.root"
 physics.filters.InitStntuple.histFileName : "/mu2e/data/personal/bvitali/nts._bvitali_.proton_gun_stnmaker.DUMMY.000001.stn"
-outputs.detectorOutput.fileName           : "/mu2e/data/personal/bvitali/sim._bvitali_.proton_gun_stnmaker.DUMMY.000001.art"
+outputs.defaultOutput.fileName            : "/mu2e/data/personal/bvitali/sim._bvitali_.proton_gun_stnmaker.DUMMY.000001.art"
 #------------------------------------------------------------------------------
 # uncomment to avoid waisting time on the initialization of detailed neutron 
 # cross sections - that shouldn't affect the electron simulation 
@@ -35,6 +36,7 @@ physics.producers.generate                      : {
     
     @table::Stntuple.producers.pgun
     physics : { @table::StoppedParticleReactionGun.physics
+
 	pdgId            : 2212
 	#pdgId            : 1000010020
 	
@@ -56,13 +58,6 @@ physics.producers.generate                      : {
 }
 
 physics.producers.g4run.physics.physicsListName : "QGSP_BERT"
-#------------------------------------------------------------------------------
-# currently = choose MVA's of the right sign
-#------------------------------------------------------------------------------
-physics.producers.TrkQualDeMHPar.TrkQualMVA  : { @table::TrkQualNeg.TrkQualMVA }
-physics.producers.TrkQualDeMHDar.TrkQualMVA  : { @table::TrkQualNeg.TrkQualMVA }
-physics.producers.TrkQualDmuMHPar.TrkQualMVA : { @table::TrkQualNeg.TrkQualMVA }
-physics.producers.TrkQualDmuMHDar.TrkQualMVA : { @table::TrkQualNeg.TrkQualMVA }
 #------------------------------------------------------------------------------
 # everything below is appended by murat/scripts/submit_mu2e_job
 #------------------------------------------------------------------------------

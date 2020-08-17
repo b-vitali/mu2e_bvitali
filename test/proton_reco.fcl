@@ -7,14 +7,13 @@
 #include "fcl/standardServices.fcl"
 
 #include "Stntuple/fcl/prolog.fcl"
-
 BEGIN_PROLOG
   pdgCode    : @local::Particle.eminus 
   bgHitFiles : @nil
 END_PROLOG
 
 
-#include "Stntuple/fcl/templates.fcl"
+#include "Stntuple/fcl/stntuple_templates.fcl"
 
 process_name : ProtonReco
 
@@ -305,7 +304,15 @@ physics : {
 	 ,MuHitDisplayDpP
 	]
 
-    trigger_paths : [ p2  ]  ##<---------------------------- Change path to match the right .art file 
+# just the hits
+    p4: [
+	 makeSH, makePH, FlagBkgHits,
+	 @sequence::Stntuple.cal_reco,
+	 TimeClusterFinderDpP,
+	 StntupleMakerDpPBV ,FillStntuple
+	]
+
+    trigger_paths : [ p4  ]  ##<---------------------------- Change path to match the right .art file 
     out           : [     ]
     end_paths     : [ out ]
 }

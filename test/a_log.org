@@ -1,0 +1,16 @@
+* mu2e -c bvitali/test/e_gun_stnmaker.fcl -n 10 (Same for proton_gun_stmaker.fcl)
+Failed to parse the configuration file 'bvitali/test/e_gun_stnmaker.fcl' with exception
+---- Parse error BEGIN
+  Local lookup error
+  ---- Can't find key BEGIN
+    TRIGGER_PATHS (at part "TRIGGER_PATHS")
+  ---- Can't find key END
+  at line 210, character 24, of file "/mu2e/app/users/bvitali/su2020/JobConfig/common/su2020_templates.fcl"
+  included from line 9 of file "/mu2e/app/users/bvitali/su2020/Stntuple/fcl/stntuple_templates.fcl"
+  included from line 45 of file "/mu2e/app/users/bvitali/su2020/Stntuple/fcl/stnmaker.fcl"
+  included from line 5 of file "/mu2e/app/users/bvitali/su2020/Stntuple/test/stnmaker.fcl"
+  included from line 15 of file "./bvitali/test/e_gun_stnmaker.fcl"
+  
+            SelectEvents  : [ @sequence::TRIGGER_PATHS ]
+                         ^
+---- Parse error END
