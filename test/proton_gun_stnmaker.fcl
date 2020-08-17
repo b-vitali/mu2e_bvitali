@@ -31,9 +31,21 @@ outputs.detectorOutput.fileName           : "/mu2e/data/personal/bvitali/sim._bv
 # uncomment to avoid waisting time on the initialization of detailed neutron 
 # cross sections - that shouldn't affect the electron simulation 
 #------------------------------------------------------------------------------
+mergedMuon_tgtStops_mdc2018_1 : [ "mergedMuonStops/nts.mu2e.DS-TGTstops.MDC2018a.001002_00000000.root" ]
+mu2e.tgtMuonStops: {
+    inputFiles            : @nil
+    averageNumRecordsToUse: 500000
+    treeName              : "stoppedMuonDumper/stops"
+    branchName            : "stops"
+    verbositylevel        : 0
+}
+
+
 physics.producers.generate                      : { 
     
     @table::Stntuple.producers.pgun
+    muonStops      : { @table::mu2e.tgtMuonStops
+	inputFiles : @local::mergedMuon_tgtStops_mdc2018_1  }
     physics : { @table::StoppedParticleReactionGun.physics
 	pdgId            : 2212
 	#pdgId            : 1000010020
