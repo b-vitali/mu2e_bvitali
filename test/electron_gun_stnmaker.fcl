@@ -1,0 +1,81 @@
+# -*- mode:tcl -*-
+#------------------------------------------------------------------------------
+# generate protons (E default = look Stntuple.producers.pgun) and make STNTUPLE
+# p1 : default reconstruction path
+# p2 : read and ntuple (use with RootInput to ntuple MDC'2018 files)
+# p3 : path to debug the TPR and CPR reconstruction paths separately
+#------------------------------------------------------------------------------
+BEGIN_PROLOG
+  bgHitFiles   : @nil
+  INPUT_MODULE : EmptyEvent
+  TRIGGER_PATH : p1
+  PROCESS_NAME : EMinusGunStnmaker
+END_PROLOG
+
+#include "Stntuple/test/stnmaker.fcl"
+source : {module_type : EmptyEvent}
+#------------------------------------------------------------------------------
+# uncomment the next 2 lines if you want the DST (.art) file to be written out
+#------------------------------------------------------------------------------
+#Try to redifine detectorFilter as in JobConfig/beam/prolog.fcl
+physics.out                               : [ detectorOutput ]
+outputs.detectorOutput.SelectEvents       : [ @local::TRIGGER_PATH ]
+outputs.detectorOutput.outputCommands     : ["keep *_*_*_*"]                    ##KEEP EVERYTHING 
+#------------------------------------------------------------------------------
+# output file names ##/mu2e/data/personal/bvitali/nts._USER_.proton_gun_stnmaker.xxx.000003.root
+#------------------------------------------------------------------------------
+services.TFileService.fileName            : "/mu2e/data/personal/bvitali/test2.root"
+physics.filters.InitStntuple.histFileName :"/mu2e/data/personal/bvitali/test2.stn"
+outputs.detectorOutput.fileName           : "/mu2e/data/personal/bvitali/test2.art"
+#------------------------------------------------------------------------------
+# uncomment to avoid waisting time on the initialization of detailed neutron 
+# cross sections - that shouldn't affect the electron simulation 
+#------------------------------------------------------------------------------
+
+#physics.producers.generate.muonStops.inputFiles: ["mergedMuonStops/nts.mu2e.DS-TGTstops.MDC2018a.001002_00000000k.root"]
+
+mu2e.tgtMuonStops: {
+    inputFiles            : @nil
+    averageNumRecordsToUse: 500000
+    treeName              : "stoppedMuonDumper/stops"
+    branchName            : "stops"
+    verbositylevel        : 0
+}
+
+
+
+physics.producers.generate                      : { 
+      
+    @table::Stntuple.producers.egun
+    physics : { @table::StoppedParticleReactionGun.physics
+	#pdgId            : 2212
+	#pdgId            : 1000010020
+	
+	elow             : 99. ##100
+	ehi              : 100. ##500
+	
+	spectrumVariable  : "momentum"
+	spectrumShape     : "flat"
+	
+	#spectrumShape     : "ejectedProtons"
+	#spectrumVariable  : "kineticEnergy"
+	#nbins             : 1000
+	
+#	spectrumVariable : kineticEnergy ## "momentum"
+#	spectrumShape    : "tabulated"
+#	spectrumFileName : "ConditionsService/data/ejected_protons_energy_weights.tbl"
+	}
+    
+}
+
+physics.producers.g4run.physics.physicsListName : "QGSP_BERT"
+#------------------------------------------------------------------------------
+# currently = choose MVA's of the right sign
+#------------------------------------------------------------------------------
+#physics.producers.TrkQualDeMHPar.TrkQualMVA  : { @table::TrkQualNeg.TrkQualMVA }
+#physics.producers.TrkQualDeMHDar.TrkQualMVA  : { @table::TrkQualNeg.TrkQualMVA }
+#physics.producers.TrkQualDmuMHPar.TrkQualMVA : { @table::TrkQualNeg.TrkQualMVA }
+#physics.producers.TrkQualDmuMHDar.TrkQualMVA : { @table::TrkQualNeg.TrkQualMVA }
+#------------------------------------------------------------------------------
+# everything below is appended by murat/scripts/submit_mu2e_job
+#------------------------------------------------------------------------------
