@@ -24,13 +24,15 @@ outputs.detectorOutput.outputCommands     : ["keep *_*_*_*"]                    
 #------------------------------------------------------------------------------
 # output file names ##/mu2e/data/personal/bvitali/nts._USER_.proton_gun_stnmaker.xxx.000003.root
 #------------------------------------------------------------------------------
-services.TFileService.fileName            : "/mu2e/data/personal/bvitali/nts._bvitali_.proton_gun_stnmaker.DUMMY.000001.root"
-physics.filters.InitStntuple.histFileName : "/mu2e/data/personal/bvitali/nts._bvitali_.proton_gun_stnmaker.DUMMY.000001.stn"
-outputs.detectorOutput.fileName           : "/mu2e/data/personal/bvitali/sim._bvitali_.proton_gun_stnmaker.DUMMY.000001.art"
+services.TFileService.fileName            : "/mu2e/data/personal/bvitali/proton1M/nts._bvitali_.proton_gun_1M.root"
+physics.filters.InitStntuple.histFileName : "/mu2e/data/personal/bvitali/proton1M/nts._bvitali_.proton_gun_1M.stn"
+outputs.detectorOutput.fileName           : "/mu2e/data/personal/bvitali/proton1M/sim._bvitali_.proton_gun_1M.art"
 #------------------------------------------------------------------------------
 # uncomment to avoid waisting time on the initialization of detailed neutron 
 # cross sections - that shouldn't affect the electron simulation 
 #------------------------------------------------------------------------------
+
+#physics.producers.generate.muonStops.inputFiles: ["mergedMuonStops/nts.mu2e.DS-TGTstops.MDC2018a.001002_00000000k.root"]
 mergedMuon_tgtStops_mdc2018_1 : [ "mergedMuonStops/nts.mu2e.DS-TGTstops.MDC2018a.001002_00000000.root" ]
 mu2e.tgtMuonStops: {
     inputFiles            : @nil
@@ -42,39 +44,41 @@ mu2e.tgtMuonStops: {
 
 
 physics.producers.generate                      : { 
-    
+      
     @table::Stntuple.producers.pgun
+  #  @table::EventGenerator.muonStops
     muonStops      : { @table::mu2e.tgtMuonStops
 	inputFiles : @local::mergedMuon_tgtStops_mdc2018_1  }
     physics : { @table::StoppedParticleReactionGun.physics
 	pdgId            : 2212
-	#pdgId            : 1000010020
+#	pdgId            : 1000010020  ##deuterons
 	
-	elow             : 100. ##100
-	ehi              : 300. ##500
+#	elow             : 100. ##100
+#	ehi              : 600. ##500	
+#	spectrumVariable  : "momentum"
+#	spectrumShape     : "flat"
 	
-	spectrumVariable  : "momentum"
-	spectrumShape     : "flat"
+#	spectrumShape     : "ejectedProtons"
+#	spectrumVariable  : "kineticEnergy"
+#	nbins             : 1000
 	
-	#spectrumShape     : "ejectedProtons"
-	#spectrumVariable  : "kineticEnergy"
-	#nbins             : 1000
-	
-	#spectrumVariable : kineticEnergy ## "momentum"
-	#spectrumShape    : "tabulated"
-	#spectrumFileName : "ConditionsService/data/ejected_deuterons_energy_weights.tbl"
+	spectrumVariable : kineticEnergy ## "momentum"
+	spectrumShape    : "tabulated"
+	spectrumFileName : "ConditionsService/data/ejected_protons_energy_weights.tbl"
 	}
     
 }
 
 physics.producers.g4run.physics.physicsListName : "QGSP_BERT"
+services.SeedService.baseSeed         : 8
+services.SeedService.maxUniqueEngines : 20
 #------------------------------------------------------------------------------
 # currently = choose MVA's of the right sign
 #------------------------------------------------------------------------------
-physics.producers.TrkQualDeMHPar.TrkQualMVA  : { @table::TrkQualNeg.TrkQualMVA }
-physics.producers.TrkQualDeMHDar.TrkQualMVA  : { @table::TrkQualNeg.TrkQualMVA }
-physics.producers.TrkQualDmuMHPar.TrkQualMVA : { @table::TrkQualNeg.TrkQualMVA }
-physics.producers.TrkQualDmuMHDar.TrkQualMVA : { @table::TrkQualNeg.TrkQualMVA }
+#physics.producers.TrkQualDeMHPar.TrkQualMVA  : { @table::TrkQualNeg.TrkQualMVA }
+#physics.producers.TrkQualDeMHDar.TrkQualMVA  : { @table::TrkQualNeg.TrkQualMVA }
+#physics.producers.TrkQualDmuMHPar.TrkQualMVA : { @table::TrkQualNeg.TrkQualMVA }
+#physics.producers.TrkQualDmuMHDar.TrkQualMVA : { @table::TrkQualNeg.TrkQualMVA }
 #------------------------------------------------------------------------------
 # everything below is appended by murat/scripts/submit_mu2e_job
 #------------------------------------------------------------------------------
