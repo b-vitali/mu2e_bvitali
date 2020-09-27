@@ -245,7 +245,10 @@ void comparison(){
     y_d[i] =  (spectrum_d -> Eval(x[i]))/integral_d * 0.018;
     y_hp[i] =  (spectrum_h -> Eval(x[i]))/integral_hp * 0.05;
     y_hd[i] =  (spectrum_h -> Eval(x[i]))/ integral_hd *0.05*0.5; //p:d=2:1 ?
+    if(i%1000 == 0) std::cout<<y_p[i]<<" "<<y_d[i]<<" "<<y_hp[i]<<" "<<y_hd[i]<<" "<<std::endl;
+
   }
+
 
   double scale_p, scale_d;
   double sum_p, sum_d, sum_hp, sum_hd, sum_d_reco, sum_hd_reco;
@@ -431,4 +434,47 @@ double EjectedProtonSpectrum(double e){
       spectrumWeight = 0.;
     }
   return spectrumWeight;
+}
+
+
+double EjectedProtonSpectrum_mom(double* x_poit, double* par){
+
+  double m = par[0];
+  double p = x_poit[0];
+  double e = sqrt(p*p + m*m)-m; //momentum->energy rel
+  double jacob = p / sqrt(p*p + m*m);
+
+  //these numbers are in MeV!!!!
+  static const double emn = 1.4; // replacing par1 from GMC
+  static const double par2 = 1.3279;
+  static const double par3=17844.0;
+  static const double par4=.32218;
+  static const double par5=100.;
+  static const double par6=10.014;
+  static const double par7=1050.;
+  static const double par8=5.103;
+  
+  double spectrumWeight;
+  
+  if (e >= 20)
+    {
+      spectrumWeight=par5*exp(-(e-20.)/par6);
+    }
+  
+  else if(e >= 8.0 && e <= 20.0)
+    {
+      spectrumWeight=par7*exp(-(e-8.)/par8);
+    }
+  else if (e > emn)
+    {
+      double xw=(1.-emn/e);
+      double xu=std::pow(xw,par2);
+      double xv=par3*exp(-par4*e);
+      spectrumWeight=xv*xu;
+    }
+  else
+    {
+      spectrumWeight = 0.;
+    }
+  return spectrumWeight*jacob;
 }

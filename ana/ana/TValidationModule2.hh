@@ -30,6 +30,8 @@
 
 #include "Stntuple/obj/TTrackStrawHitBlock.hh"
 #include "Stntuple/obj/TTrackStrawHitData.hh"
+#include "Stntuple/obj/TStepPointMCBlock.hh" //
+
 
 class TValidationModule2: public TStnModule {
 public:
@@ -89,6 +91,16 @@ public:
     TH1F*    fEleCosTh;
     TH1F*    fNClusters;
     TH1F*    fNTracks;
+
+    TH1F*    fNTracksP;                 // bastiano Proton reco
+    TH1F*    fNTracksD;                 // bastiano Deuteron reco
+    TH1F*    fNTracksO;                 // bastiano others reco
+
+    TH1F*    fNTracksCut;
+    TH1F*    fNTracksPCut;                 // bastiano Proton reco
+    TH1F*    fNTracksDCut;                 // bastiano Deuteron reco
+    TH1F*    fNTracksOCut;                 // bastiano others reco
+
     TH1F*    fNGoodTracks;
     TH1F*    fNStrawHits[2];
     TH1F*    fNGoodSH;
@@ -98,13 +110,23 @@ public:
     TH1F*    fSHTime;
     TH1F*    fNHyp;
     TH1F*    fBestHyp[2];		// [0]: by chi2, [1]: by fit consistency
+    TH1F*    fNTimeClusters;            // bastiano number of timeclusters
+    TH2F*    fNTimeClustersVsMom;       // bastiano number of timeclusters
     TH1F*    fNGenp;                    // N(particles in GENP block)
     TH1F*    fQSH;                      // SH charge
+    TH1F*    fQSH_p;                    // bastiano SH charge from protons
+    TH1F*    fQSH_d;                    // bastiano SH charge from deuteron
+    TH1F*    fQSH_e;                    // JJ SH charge from electro
     TH2F*    fNSHVsPreco;               // bastiano proton eff
     TH2F*    fLumVsNTrk;                // number of trks and luminosity
+
+    TH2F*    fLumVsNTrkCut;                // bastiano proton eff
+
     TH2F*    fLastZVsPreco;             // bastiano proton eff
     TH2F*    fFirstZVsPreco;            // bastiano proton eff
-
+    TH2F*    fZVsPreco;                 // bastiano proton eff
+    TH2F*    fStdTimeVsMom;             // bastiano proton eff
+    TH2F*    fWidthTimeVsMom;
   };
 
   struct TimeClusterHist_t {
@@ -113,6 +135,7 @@ public:
     TH1F*    fT0;
     TH1F*    fClusterEnergy;
     TH2F*    fNComboHitsVsP;
+    TH2F*    fFracSHVsP;
   
   };
 
@@ -143,8 +166,13 @@ public:
     TH1F*    fT0Err;
     TH1F*    fD0;
     TH1F*    fAlg;
-    TH2F*    fLambdaVsP;                // bvitali proton_reco
+    TH2F*    fChi2XYNDof;
+    TH2F*    fChi2PhiZNDof;
+    TH2F*    fLambdaVsP;          // bvitali proton_reco
+    TH2F*    fRadiusVsP;          // bvitali proton_reco
     TH2F*    fNRotVsP;            // bvitali proton_reco
+    TH2F*    fFracSHVsP;          // bvitali proton_reco
+    TH2F*    fPrecoVsP;           // bvitali proton_reco
   };
 
   struct TrackHist_t {
@@ -243,6 +271,11 @@ public:
     TH1F*    fDeuPreco;                 // bastiano deuton eff     
     TH2F*    fDeuPrecoVsP;              // bastiano deuton eff
     */
+
+    //TH1F*    fPrecoprAll;                  // bastiano proton eff	          
+    //TH2F*    fPrecoVsPAll;                 // bastiano proton eff
+    //TH2F*    fChi2dVsPAll;                 // bastiano proton eff
+
     TH1F*    fPrecopr;                  // bastiano proton eff	          
     TH2F*    fPrecoVsP;                 // bastiano proton eff
     TH2F*    fChi2dVsP;                 // bastiano proton eff
@@ -279,6 +312,15 @@ public:
     TH1F*    fMomTargetEnd;
     TH1F*    fMomTrackerFront;
     TH1F*    fNStrawHits;
+
+    TH1F*    fPvd;                      //bastiano proton eff
+    TH1F*    fCosTh;                    //bastiano proton eff
+    TH2F*    fPvdVsNSH;                 //bastiano proton eff
+    TH2F*    fPvdVsCosTh;               //bastiano proton eff
+    TH2F*    fCosThVsNSH;               //bastiano proton eff
+    TH2F*    fPvdVsPgen;                //bastiano proton eff
+    TH1F*    fPvdEndT;                  //bastiano proton eff
+
   };
 
 //-----------------------------------------------------------------------------
@@ -336,6 +378,8 @@ public:
   TGenpBlock*            fGenpBlock;
   TSimpBlock*            fSimpBlock;
   TTrackStrawHitBlock*   fTrackSHBlock;
+  TStepPointMCBlock*     fStepPointMCBlock; //??
+
 					// additional track parameters (assume ntracks < 20)
   TrackPar_t        fTrackPar[20];
 					// histograms filled

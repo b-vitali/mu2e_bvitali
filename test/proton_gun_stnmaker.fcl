@@ -24,9 +24,9 @@ outputs.detectorOutput.outputCommands     : ["keep *_*_*_*"]                    
 #------------------------------------------------------------------------------
 # output file names ##/mu2e/data/personal/bvitali/nts._USER_.proton_gun_stnmaker.xxx.000003.root
 #------------------------------------------------------------------------------
-services.TFileService.fileName            : "/mu2e/data/personal/bvitali/proton1M/nts._bvitali_.proton_gun_1M.root"
-physics.filters.InitStntuple.histFileName : "/mu2e/data/personal/bvitali/proton1M/nts._bvitali_.proton_gun_1M.stn"
-outputs.detectorOutput.fileName           : "/mu2e/data/personal/bvitali/proton1M/sim._bvitali_.proton_gun_1M.art"
+services.TFileService.fileName            : "/mu2e/data/personal/bvitali/proton1M/nts._bvitali_.proton.root"
+physics.filters.InitStntuple.histFileName : "/mu2e/data/personal/bvitali/proton1M/nts._bvitali_.proton.stn"
+outputs.detectorOutput.fileName           : "/mu2e/data/personal/bvitali/proton1M/sim._bvitali_.proton.art"
 #------------------------------------------------------------------------------
 # uncomment to avoid waisting time on the initialization of detailed neutron 
 # cross sections - that shouldn't affect the electron simulation 
@@ -41,7 +41,6 @@ mu2e.tgtMuonStops: {
     branchName            : "stops"
     verbositylevel        : 0
 }
-
 
 physics.producers.generate                      : { 
       
@@ -70,7 +69,7 @@ physics.producers.generate                      : {
 }
 
 physics.producers.g4run.physics.physicsListName : "QGSP_BERT"
-services.SeedService.baseSeed         : 8
+services.SeedService.baseSeed         : 5
 services.SeedService.maxUniqueEngines : 20
 #------------------------------------------------------------------------------
 # currently = choose MVA's of the right sign
