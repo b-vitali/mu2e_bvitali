@@ -75,36 +75,36 @@ TValidationModule2::~TValidationModule2() {
 //-----------------------------------------------------------------------------
 void TValidationModule2::BookTimeClusterHistograms   (TimeClusterHist_t*   Hist, const char* Folder){
   
-    HBook1F(Hist->fNHits         ,"nhits"      ,Form("%s: number of StrawHits; nSH"              ,Folder), 150,   0,   150,Folder);
-    HBook1F(Hist->fNComboHits    ,"ncombohits" ,Form("%s: number of ComboHits; nCH"              ,Folder), 150,   0,   150,Folder);
+    HBook1F(Hist->fNHits         ,"nhits"      ,Form("%s: Number of StrawHits; nSH/1"              ,Folder), 150,   0,   150,Folder);
+    HBook1F(Hist->fNComboHits    ,"ncombohits" ,Form("%s: Number of ComboHits; nCH/1"              ,Folder), 150,   0,   150,Folder);
     HBook1F(Hist->fT0            ,"t0"         ,Form("%s: t_{0}[ns]"       ,Folder), 800, 400,  1700,Folder);
     HBook1F(Hist->fClusterEnergy ,"clusterE"   ,Form("%s: cluster energy; E [MeV]      ",Folder), 400,   0,  200,Folder);  
 
-    HBook2F(Hist->fNComboHitsVsP ,"ncombohits_vs_p" ,Form("%s: number of ComboHits vs generated p; p [MeV/c]; nCH",Folder), 2400, 0,600, 200, 0, 200, Folder);              //
-    HBook2F(Hist->fFracSHVsP ,"fracSH_vs_p" ,Form("%s: Fraction of hits in the TimeCLuster vs generated p; p [MeV/c]; sh(TC)/sh(TOT)",Folder), 2400, 0,600, 110,0,1.1, Folder);              //
+    HBook2F(Hist->fNComboHitsVsP ,"ncombohits_vs_p" ,Form("%s: ComboHits vs generated p; p [MeV/c]; nCH/(X MeV/c)",Folder), 2400, 0,600, 200, 0, 200, Folder);              //
+    HBook2F(Hist->fFracSHVsP ,"fracSH_vs_p" ,Form("%s: Fraction of StrawHits vs generated p; p [MeV/c]; sh(TC)/sh(TOT)",Folder), 2400, 0,600, 110,0,1.1, Folder);              //
 
 }
 //-----------------------------------------------------------------------------
 void TValidationModule2::BookHelixHistograms   (HelixHist_t*   Hist, const char* Folder){
   
-    HBook1F(Hist->fNHits         ,"nhits"      ,Form("%s: number of StrawHits; nSH"            ,Folder), 150,   0,   150,Folder);
+    HBook1F(Hist->fNHits         ,"nhits"      ,Form("%s: number of StrawHits; nSH/1"            ,Folder), 150,   0,   150,Folder);
     HBook1F(Hist->fClusterTime   ,"clusterTime",Form("%s: cluster time; t_{cluster}[ns]"   ,Folder), 800, 400,  1700,Folder);
     HBook1F(Hist->fClusterEnergy ,"clusterE"   ,Form("%s: cluster energy; E [MeV]      "   ,Folder), 400,   0,  200,Folder);
     HBook1F(Hist->fRadius        ,"radius"     ,Form("%s: curvature radius; r [mm]"        ,Folder), 600,   0,   600,Folder);
-    HBook1F(Hist->fMom           ,"p"          ,Form("%s: momentum; p [MeV/c]"             ,Folder), 2400,  0,   600,Folder);
+    HBook1F(Hist->fMom           ,"p"          ,Form("%s: momentum; p [MeV/c]; entries/(X MeV/c)"    ,Folder), 2400,  0,   600,Folder);
     HBook1F(Hist->fPt            ,"pT"         ,Form("%s: transverse momentum; pT [MeV/c]" ,Folder), 600,   0,   150,Folder);
     HBook1F(Hist->fLambda        ,"lambda"     ,Form("%s: lambda; -#lambda [mm/rad]"       ,Folder), 2500,  0,   2500,Folder);
     HBook1F(Hist->fT0            ,"t0"         ,Form("%s: t0; t0[ns]"                      ,Folder), 100,   0,    10,Folder);
     HBook1F(Hist->fT0Err         ,"t0err"      ,Form("%s: t0err; t0err [ns]"               ,Folder), 100,   0,    10,Folder);
     HBook1F(Hist->fD0            ,"d0"         ,Form("%s: D0; d0 [mm]"                     ,Folder), 1600,   -400,    400,Folder);
-    HBook2F(Hist->fChi2XYNDof    ,"chi2ndofxy" ,Form("%s: Chi2/NDof XY vs generate p; p [MeV/c]; #chi2/dof"    ,Folder), 2400, 0,600, 150, 0,   50,Folder);
-    HBook2F(Hist->fChi2PhiZNDof    ,"chi2ndofphiz" ,Form("%s: Chi2/NDof #Phi Z vs generate p; p [MeV/c]; #chi2/dof" ,Folder), 2400, 0,600, 150, 0,   50,Folder);
+    HBook2F(Hist->fChi2XYNDof    ,"chi2ndofxy" ,Form("%s: Chi2/NDof XY vs generate p; p [MeV/c]; #chi2/dof/(X MeV/c)"    ,Folder), 2400, 0,600, 150, 0,   50,Folder);
+    HBook2F(Hist->fChi2PhiZNDof    ,"chi2ndofphiz" ,Form("%s: Chi2/NDof #Phi Z vs generate p; p [MeV/c]; #chi2/dof/(X MeV/c)" ,Folder), 2400, 0,600, 150, 0,   50,Folder);
 
-    HBook2F(Hist->fLambdaVsP ,"lambda_vs_p" ,Form("%s:Lambda vs generated p; p [MeV/c]; -#lambda [mm/rad]",Folder), 2400, 0,600, 2500, 0, 2500, Folder);            
-    HBook2F(Hist->fNRotVsP ,"nrot_vs_p" ,Form("%s: rotations vs generated p; p [MeV/c]; Rot.",Folder), 2400, 0,600, 1000, 0, 5, Folder);    
-    HBook2F(Hist->fRadiusVsP,"radius_vs_p" ,Form("%s: radius vs generated p; p [MeV/c]; Rot.",Folder), 2400, 0,600, 600, 100, 700, Folder);    
+    HBook2F(Hist->fLambdaVsP ,"lambda_vs_p" ,Form("%s:Lambda vs generated p; p [MeV/c]; -#lambda [mm/rad]/(X MeV/c)",Folder), 2400, 0,600, 2500, 0, 2500, Folder);            
+    HBook2F(Hist->fNRotVsP ,"nrot_vs_p" ,Form("%s: rotations vs generated p; p [MeV/c]; Rot./(X MeV/c)",Folder), 2400, 0,600, 1000, 0, 5, Folder);    
+    HBook2F(Hist->fRadiusVsP,"radius_vs_p" ,Form("%s: radius vs generated p; p [MeV/c]; R[mm]/(X MeV/c)",Folder), 2400, 0,600, 600, 100, 700, Folder);    
 
-    HBook2F(Hist->fFracSHVsP ,"fracsh_vs_p" ,Form("%s: fraction of SH vs generated p; p [MeV/c]; nSH active/nSH",Folder), 2400, 0,600, 200, 0, 1.1, Folder);         //
+    HBook2F(Hist->fFracSHVsP ,"fracsh_vs_p" ,Form("%s: fraction of SH vs generated p; p [MeV/c]; nSH active/nSH/(X MeV/c)",Folder), 2400, 0,600, 200, 0, 1.1, Folder);         //
     HBook2F(Hist->fPrecoVsP ,"preco_vs_p" ,Form("%s: reconstructed vs generated p; p [MeV/c]; p [MeV/c]",Folder), 2400, 0,600, 2400, 0,600, Folder);                           //
 
 
@@ -160,7 +160,7 @@ void TValidationModule2::BookGenpHistograms(GenpHist_t* Hist, const char* Folder
 //   char name [200];
 //   char title[200];
 
-  HBook1F(Hist->fP      ,"p"       ,Form("%s: momentum; p [MeV/c] "     ,Folder),1000,     0, 1000,Folder);
+  HBook1F(Hist->fP      ,"p"       ,Form("%s: momentum; p [MeV/c]; entries/(X MeV/c)"     ,Folder),1000,     0, 1000,Folder);
   HBook1F(Hist->fPdgCode[0],"pdg_code_0",Form("%s: PDG Code[0]"     ,Folder),4000, -100, 3000,Folder);
   HBook1F(Hist->fPdgCode[1],"pdg_code_1",Form("%s: PDG Code[1]"     ,Folder),500, -2500, 2500,Folder);
   HBook1F(Hist->fGenID  ,"gen_id"  ,Form("%s: Generator ID" ,Folder), 100,     0, 100,Folder);
@@ -169,11 +169,11 @@ void TValidationModule2::BookGenpHistograms(GenpHist_t* Hist, const char* Folder
   HBook1F(Hist->fR0     ,"r"       ,Form("%s: R0"           ,Folder), 100,     0,  100,Folder);
   HBook1F(Hist->fCosTh  ,"cos_th"  ,Form("%s: Cos(Theta)"   ,Folder), 200,   -1.,   1.,Folder);
 
-  HBook1F(Hist->fPpr      ,"ppr"        ,Form("%s:generated p for protons; p [MeV/c]",Folder), 2400,  0, 600,Folder);                      //
+  HBook1F(Hist->fPpr      ,"ppr"        ,Form("%s: Generated p for protons; p [MeV/c]; entries/(X MeV/c)",Folder), 2400,  0, 600,Folder);                      //
   HBook1F(Hist->fPprCheck ,"pprcheck"   ,Form("%s:True momentum CHECK of protons",Folder), 2000,  0, 50000,Folder);              //
-  HBook1F(Hist->fPdeu     ,"pdeu"       ,Form("%s:generated p for deuteria; p [MeV/c]",Folder), 2400,  0, 600,Folder);                     //
+  HBook1F(Hist->fPdeu     ,"pdeu"       ,Form("%s: Generated p for deuteria; p [MeV/c]; entries/(X MeV/c)",Folder), 2400,  0, 600,Folder);                     //
   HBook1F(Hist->fPdeuCheck,"pdeucheck"  ,Form("%s:True momentum CHECK of deuteria",Folder), 2000,  0, 50000,Folder);             //
-  HBook2F(Hist->fPrecoVsNSH ,"preco_vs_nsh" ,Form("%s:number of StrawHits vs generated p; p [MeV/c]; nSH",Folder), 2400, 0,600, 150, 0, 150, Folder); //%%
+  HBook2F(Hist->fPrecoVsNSH ,"preco_vs_nsh" ,Form("%s: Number of StrawHits vs generated p; p [MeV/c]; nSH/(X MeV/c)",Folder), 2400, 0,600, 150, 0, 150, Folder); //%%
 }
 
 //-----------------------------------------------------------------------------
@@ -287,14 +287,14 @@ void TValidationModule2::BookTrackHistograms(TrackHist_t* Hist, const char* Fold
   HBook2F(Hist->fPrecoVsP ,"preco_vs_p" ,Form("%s: reconstructed vs generated p; p [MeV/c]; p [MeV/c]",Folder), 2400, 0,600, 2400, 0,600, Folder);                           //
   HBook2F(Hist->fChi2dVsP ,"chi2d_vs_p" ,Form("%s:Chi2/dof vs generated momentum; p [MeV/c]; #chi2/dof",Folder), 2400, 0,600, 200, 0,50, Folder);                    //
 
-  HBook2F(Hist->fPrecoVsTanTh ,"preco_vs_tanth" ,Form("%s: TanTh vs generated p; p [MeV/c] ",Folder), 2400, 0,600, 2000, 0 ,10, Folder);                    //
-  HBook2F(Hist->fPrecoVsSHE ,"preco_vs_shE" ,Form("%s: SHE vs generated p; p [MeV/c]; SHE [keV] ",Folder), 2400, 0,600, 200, 0, 0.015, Folder);                        //
+  HBook2F(Hist->fPrecoVsTanTh ,"preco_vs_tanth" ,Form("%s: TanTh vs generated mom; p [MeV/c] ",Folder), 2400, 0,600, 2000, 0 ,10, Folder);                    //
+  HBook2F(Hist->fPrecoVsSHE ,"preco_vs_shE" ,Form("%s: Energy deposit vs generated mom; p [MeV/c]; SHE [keV]/(X MeV/c) ",Folder), 2400, 0,600, 200, 0, 0.015, Folder);                        //
   HBook2F(Hist->fTanThVsSHE ,"tanth_vs_shE" ,Form("%s: TanTh vs SHE",Folder), 2000, 0, 10, 200, 0, 0.015, Folder);                         //
-  HBook2F(Hist->fPrecoVsNSH ,"preco_vs_nsh" ,Form("%s: generated p vs number of SH; p [MeV/c]; nSH",Folder), 2400, 0,600, 150, 0, 150, Folder);                 //
-  HBook2F(Hist->fFracSHVsPreco ,"fracsh_vs_preco" ,Form("%s: fraction of SH vs generated p; p [MeV/c]; nSH active/nSH",Folder), 2400, 0,600, 200, 0, 1.1, Folder);         //
+  HBook2F(Hist->fPrecoVsNSH ,"preco_vs_nsh" ,Form("%s: Number of StrawHits vs generated mom; p [MeV/c]; nSH/(X MeV/c)",Folder), 2400, 0,600, 150, 0, 150, Folder);                 //
+  HBook2F(Hist->fFracSHVsPreco ,"fracsh_vs_preco" ,Form("%s: Fraction of StrawHit vs generated mom; p [MeV/c]; nSH active/nSH/(X MeV/c)",Folder), 2400, 0,600, 200, 0, 1.1, Folder);         //
 
-  HBook2F(Hist->fLastTrkZVsPreco ,"lasttrkz_vs_preco" ,Form("%s: z last SH vs generated p; p[MeV/c] ;station",Folder),2400, 0,600, 34, -2, 32, Folder);     //
-  HBook2F(Hist->fFirstTrkZVsPreco ,"firsttrkz_vs_preco" ,Form("%s: z first SH vs generated p; p[MeV/c] ;station",Folder),2400, 0,600, 34, -2, 32, Folder);  //
+  HBook2F(Hist->fLastTrkZVsPreco ,"lasttrkz_vs_preco" ,Form("%s: Station last StrawHit vs generated mom; p[MeV/c] ;station/(X MeV/c)",Folder),2400, 0,600, 34, -2, 32, Folder);     //
+  HBook2F(Hist->fFirstTrkZVsPreco ,"firsttrkz_vs_preco" ,Form("%s: Station first StrawHit vs generated mom; p[MeV/c] ;station/(X MeV/c)",Folder),2400, 0,600, 34, -2, 32, Folder);  //
 
   HBook2F(Hist->fUnusedSHVsPreco ,"unusedsh_vs_preco" ,Form("%s:Unused SH vs true P",Folder), 2400, 0,600, 2000, 0,100000, Folder);       //
   HBook2F(Hist->fUsedSHVsPreco ,"usedsh_vs_preco" ,Form("%s:Used SH vs true P",Folder),  2400, 0,600, 2000, 0,100000, Folder);             //
@@ -322,6 +322,8 @@ void TValidationModule2::BookEventHistograms(EventHist_t* Hist, const char* Fold
   HBook1F(Hist->fNTracksDCut   ,"ntrk_d_cut"     ,Form("%s: Number of Proton Reconstructed Tracks (Cut); ntrk"  ,Folder),50,0,50,Folder);
   HBook1F(Hist->fNTracksOCut   ,"ntrk_o_cut"     ,Form("%s: Number of Other Reconstructed Tracks (Cut); ntrk"  ,Folder),50,0,50,Folder);
 
+  HBook2F(Hist->fEffVsLum ,"eff_vs_istlum" ,Form("%s:Reconstruction efficiency vs Lum",Folder),2000, 1e6,100*1e6, 200, 0, 0.2,  Folder);   //
+
 
   HBook1F(Hist->fNGoodTracks  ,"ngtrk" ,Form("%s: Number of Good          Tracks"  ,Folder),100,0,100,Folder);
   HBook1F(Hist->fNStrawHits[0],"nsh_0" ,Form("%s: Number of Straw Hits [0]"        ,Folder),250,0,250,Folder);
@@ -337,6 +339,8 @@ void TValidationModule2::BookEventHistograms(EventHist_t* Hist, const char* Fold
   
   HBook1F(Hist->fNTimeClusters ,"ntimecl"      ,Form("%s: Number of Time Clusters",Folder),200,0,200,Folder);
   HBook2F(Hist->fNTimeClustersVsMom ,"ntimecl_vs_mom"      ,Form("%s: Number of Time Clusters VS Mom",Folder),2400,0,600,20,0,20,Folder);
+  HBook2F(Hist->fTCTDiscanceVsMom ,"tctdist_vs_mom"      ,Form("%s: TimeClusters distance T VS Mom",Folder),2400,0,600,100,0,100,Folder);
+  HBook2F(Hist->fTCZDiscanceVsMom ,"tczdist_vs_mom"      ,Form("%s: TimeClusters distance Z VS Mom",Folder),2400,0,600,300,0,3000,Folder);
 
   HBook1F(Hist->fNGenp     ,"ngenp"    ,Form("%s: N(Gen Particles)"                ,Folder),500,0,500,Folder);
   HBook1F(Hist->fQSH_p     ,"qsh_p"      ,Form("%s: Charge of SH from proton"              ,Folder),500,0,0.014,Folder);  
@@ -346,6 +350,11 @@ void TValidationModule2::BookEventHistograms(EventHist_t* Hist, const char* Fold
   HBook2F(Hist->fNSHVsPreco ,"nsh_vs_preco" ,Form("%s:Number of SH  vs true(?) momentum",Folder), 2400, 0,600, 200,0,200, Folder);        //
   HBook2F(Hist->fLumVsNTrk ,"istlum_vs_ntrk" ,Form("%s:Istant Luminosity vs N of Tracks",Folder), 20, 0,20, 2000, 1e6,100*1e6, Folder);   //
   HBook2F(Hist->fLumVsNTrkCut ,"istlum_vs_ntrk_cut" ,Form("%s:Istant Luminosity vs N of Tracks (cut)",Folder), 20, 0,20, 2000, 1e6,100*1e6, Folder);   //
+  HBook2F(Hist->fLumVsNSH ,"istlum_vs_nsh" ,Form("%s:Istant Luminosity vs N of SH",Folder), 500, 0, 5000, 2000, 1e6,100*1e6, Folder);   //
+
+  HBook1F(Hist->fLum ,"istlum" ,Form("%s: Proton Pulse intensity distribution",Folder), 2000, 1e6,100*1e6, Folder);   //
+  HBook1F(Hist->fLumRel ,"istlum_rel" ,Form("%s: Proton Pulse intensity distribution",Folder), 240, 0, 6, Folder);   //
+
 
   HBook2F(Hist->fLastZVsPreco ,"lastz_vs_preco" ,Form("%s:LastZ vs generated momentum",Folder), 2400, 0,600, 34, -2, 32, Folder);           //
   HBook2F(Hist->fFirstZVsPreco ,"firstz_vs_preco" ,Form("%s:FirstZ vs generated momentum",Folder),2400, 0,600, 34, -2, 32, Folder);        //
@@ -354,8 +363,9 @@ void TValidationModule2::BookEventHistograms(EventHist_t* Hist, const char* Fold
   HBook2F(Hist->fStdTimeVsMom     ,"stdtime_vs_mom"    ,Form("%s: cluster time std vs mom",Folder),2400, 0,600,500,0,50,Folder);
   HBook2F(Hist->fWidthTimeVsMom     ,"widthtime_vs_mom"    ,Form("%s: cluster time width vs mom",Folder),2400, 0,600,500,0,50,Folder);
 
-
 }
+
+
 
 //-----------------------------------------------------------------------------
 void TValidationModule2::BookSimpHistograms(SimpHist_t* Hist, const char* Folder) {
@@ -674,6 +684,20 @@ void TValidationModule2::FillEventHistograms(EventHist_t* Hist) {
   Hist->fNSHVsPreco->Fill(p,fNStrawHits);
 
 
+  //TimeCluster Distance
+  float dist = 0;
+  if(GetHeaderBlock()->InstLum()== -1 && fNTimeClusters[0] > 1){
+    for(int i = 0; i < fNTimeClusters[0]-1; i++){
+      dist = fTimeClusterBlock->TimeCluster(i+1)->T0()-fTimeClusterBlock->TimeCluster(i)->T0();
+      Hist->fTCTDiscanceVsMom->Fill(p,abs(dist));
+      dist = fTimeClusterBlock->TimeCluster(i+1)->posZ()-fTimeClusterBlock->TimeCluster(i)->posZ();
+      Hist->fTCZDiscanceVsMom->Fill(p,abs(dist));
+    }
+  }
+
+  Hist->fLum->Fill(GetHeaderBlock()->InstLum());
+  Hist->fLumRel->Fill((float)GetHeaderBlock()->InstLum()/3.9e7);
+  Hist->fLumVsNSH->Fill(fNStrawHits,GetHeaderBlock()->InstLum());
   Hist->fLumVsNTrk->Fill(fTrackBlock->NTracks(),GetHeaderBlock()->InstLum());
   int ntrkchi2=0;
   int ntrk_p = 0;
@@ -689,7 +713,7 @@ void TValidationModule2::FillEventHistograms(EventHist_t* Hist) {
     if(trk->Chi2Dof()<5) {ntrkchi2=ntrkchi2+1; nice = true;}//---------------------------------
     if(trk->fPdgCode == 2212) {ntrk_p = ntrk_p + 1; if(nice) ntrk_p_cut = ntrk_p_cut+1; }
     else if(trk->fPdgCode == 1000010020) {ntrk_d = ntrk_d + 1; if(nice) ntrk_d_cut = ntrk_d_cut+1;}
-    else { ntrk_o = ntrk_o + 1;if(nice) ntrk_o_cut = ntrk_o_cut+1;}
+    else { ntrk_o = ntrk_o + 1;if(nice) ntrk_o_cut = ntrk_o_cut+1; std::cout<<"Other tracks:"<<trk->fPdgCode<<std::endl;}
 
   }
   Hist->fNTracksCut->Fill(ntrkchi2);
@@ -702,6 +726,9 @@ void TValidationModule2::FillEventHistograms(EventHist_t* Hist) {
   Hist->fNTracksDCut->Fill(ntrk_d_cut); //deuterons
   Hist->fNTracksOCut->Fill(ntrk_o_cut); //others?
 
+  double attese = GetHeaderBlock()->InstLum() * 0.0016 * (0.03 + 0.015);
+  double eff = fNTracks[0]/attese;
+  Hist->fEffVsLum->Fill(GetHeaderBlock()->InstLum(),eff);
 
   double emax   = -1;
   double t0_cls = -1;

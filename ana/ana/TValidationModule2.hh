@@ -101,6 +101,9 @@ public:
     TH1F*    fNTracksDCut;                 // bastiano Deuteron reco
     TH1F*    fNTracksOCut;                 // bastiano others reco
 
+    TH2F*    fEffVsLum;                // number of trks and luminosity
+
+
     TH1F*    fNGoodTracks;
     TH1F*    fNStrawHits[2];
     TH1F*    fNGoodSH;
@@ -112,15 +115,24 @@ public:
     TH1F*    fBestHyp[2];		// [0]: by chi2, [1]: by fit consistency
     TH1F*    fNTimeClusters;            // bastiano number of timeclusters
     TH2F*    fNTimeClustersVsMom;       // bastiano number of timeclusters
+    
+    TH2F*    fTCTDiscanceVsMom;          // bastiano number of timeclusters
+    TH2F*    fTCZDiscanceVsMom;
+
     TH1F*    fNGenp;                    // N(particles in GENP block)
     TH1F*    fQSH;                      // SH charge
     TH1F*    fQSH_p;                    // bastiano SH charge from protons
     TH1F*    fQSH_d;                    // bastiano SH charge from deuteron
     TH1F*    fQSH_e;                    // JJ SH charge from electro
     TH2F*    fNSHVsPreco;               // bastiano proton eff
+    
+    TH2F*    fLumVsNSH;
     TH2F*    fLumVsNTrk;                // number of trks and luminosity
 
-    TH2F*    fLumVsNTrkCut;                // bastiano proton eff
+    TH2F*    fLumVsNTrkCut;             // bastiano proton eff
+    TH1F*    fLum;                      // luminosity
+    TH1F*    fLumRel;                   // relative luminosity
+
 
     TH2F*    fLastZVsPreco;             // bastiano proton eff
     TH2F*    fFirstZVsPreco;            // bastiano proton eff
